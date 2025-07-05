@@ -1,5 +1,4 @@
 import React from "react";
-import type { Category } from "../../apis/mock/purchase";
 
 interface CategoryFilterProps {
   categories: Category[];
