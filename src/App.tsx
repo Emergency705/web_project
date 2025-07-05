@@ -35,6 +35,8 @@ import EditProfile from "./pages/EditProfile"; // 추가
 import GoodbyePage from "./pages/GoodbyePage"; // 추가 (탈퇴 후 이동)
 import MyFundings from "./pages/MyFundings"; // 추가 (내가 참여한 펀딩 목록)
 import WriteReview from "./pages/WriteReview";
+import EditFunding from './pages/EditFunding';
+
 function App() {
   return (
     <BrowserRouter>
@@ -65,6 +67,8 @@ function App() {
           <Route path="/my-fundings" element={<MyFundings />} />
           <Route path="/write-review/:id" element={<WriteReview />} />
           <Route path="/saved-posts" element={<SavedPosts />} />
+          <Route path="/edit-funding/:id" element={<EditFunding />} />
+
 
           {/* 카테고리별 페이지 라우트 */}
           <Route path="/category1" element={<Category1Page />} />
