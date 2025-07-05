@@ -5,6 +5,10 @@ import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
 import MyPage from "./pages/MyPage";
 import CounselPage from "./pages/CounselPage";
+import Category1Page from "./pages/Category1Page";
+import Category2Page from "./pages/Category2Page";
+import Category3Page from "./pages/Category3Page";
+import Category4Page from "./pages/Category4Page";
 import BottomNavBar from "./components/BottomNavBar";
 
 function App() {
@@ -18,6 +22,12 @@ function App() {
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/mypage" element={<MyPage />} />
           <Route path="/counsel" element={<CounselPage />} />
+
+          {/* 카테고리별 페이지 라우트 */}
+          <Route path="/category1" element={<Category1Page />} />
+          <Route path="/category2" element={<Category2Page />} />
+          <Route path="/category3" element={<Category3Page />} />
+          <Route path="/category4" element={<Category4Page />} />
         </Routes>
         <BottomNavBar />
       </div>
