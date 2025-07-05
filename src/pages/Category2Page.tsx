@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import CategoryTopBar from "../components/CategoryTopBar";
 import AnnouncementCard from "../components/AnnouncementCard";
@@ -7,31 +7,36 @@ import CategoryFilterModal from "../components/CategoryFilterModal";
 import { fetchAnnouncements } from "../apis/announcements";
 import dayjs from "dayjs";
 
-// 한글 ↔ 영문 맵핑
+// 맵핑
 const regionMap = {
   전체: undefined,
   서울: "SEOUL", 부산: "BUSAN", 대구: "DAEGU", 인천: "INCHEON",
   광주: "GWANGJU", 대전: "DAEJEON", 울산: "ULSAN", 세종: "SEJONG",
   경기: "GYEONGGI", 강원: "GANGWON", 충북: "CHUNGBUK", 충남: "CHUNGNAM",
   전북: "JEONBUK", 전남: "JEONNAM", 경북: "GYEONGBUK", 경남: "GYEONGNAM", 제주: "JEJU",
-};
-const regionOptions = Object.keys(regionMap);
+} as const;
+const regionOptions = Object.keys(regionMap) as (keyof typeof regionMap)[];
+
 const statusList = ["전체", "지원 중", "지원 마감"];
-const targetMap = { 전체: undefined, 청년: "YOUNG", "1인가구": "ALONE", "65세 이상": "ELDER" };
-const targetOptions = Object.keys(targetMap);
+const targetMap = {
+  전체: undefined,
+  청년: "YOUNG",
+  "1인가구": "ALONE",
+  "65세 이상": "ELDER"
+} as const;
+const targetOptions = Object.keys(targetMap) as (keyof typeof targetMap)[];
 
 const Category2Page = () => {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [status, setStatus] = useState("전체");
-  const [region, setRegion] = useState("전체");
-  const [target, setTarget] = useState("전체");
+  const [region, setRegion] = useState<keyof typeof regionMap>("전체");
+  const [target, setTarget] = useState<keyof typeof targetMap>("전체");
 
   const [list, setList] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
 
-  // 필터 태그
   const filterTags = useMemo(() => {
     const tags = [];
     if (status !== "전체") tags.push(status);
@@ -40,14 +45,13 @@ const Category2Page = () => {
     return tags;
   }, [status, region, target]);
 
-  // API 요청
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
         const params: any = { type: "LOAN" };
-        if (regionMap[region]) params.region = regionMap[region];
-        if (targetMap[target]) params.target = targetMap[target];
+        if (region !== "전체") params.region = regionMap[region];
+        if (target !== "전체") params.target = targetMap[target];
         const res = await fetchAnnouncements(params);
         setList(res);
       } catch (e) {
@@ -59,7 +63,6 @@ const Category2Page = () => {
     fetchData();
   }, [region, target]);
 
-  // 모집상태/검색 필터
   const filtered = useMemo(() => {
     const today = dayjs().startOf("day");
     return list.filter(item => {
@@ -80,6 +83,7 @@ const Category2Page = () => {
   // 모달 드래그
   const [dragStartY, setDragStartY] = useState<number | null>(null);
   const [dragOffset, setDragOffset] = useState<number>(0);
+
   const onTouchStart = (e: React.TouchEvent<HTMLDivElement>) => setDragStartY(e.touches[0].clientY);
   const onTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
     if (dragStartY !== null) setDragOffset(Math.max(0, e.touches[0].clientY - dragStartY));

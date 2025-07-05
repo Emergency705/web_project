@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import CategoryTopBar from "../components/CategoryTopBar";
 import AnnouncementCard from "../components/AnnouncementCard";
@@ -7,25 +7,32 @@ import CategoryFilterModal from "../components/CategoryFilterModal";
 import { fetchAnnouncements } from "../apis/announcements";
 import dayjs from "dayjs";
 
+// 맵핑
 const regionMap = {
   전체: undefined,
   서울: "SEOUL", 부산: "BUSAN", 대구: "DAEGU", 인천: "INCHEON",
   광주: "GWANGJU", 대전: "DAEJEON", 울산: "ULSAN", 세종: "SEJONG",
   경기: "GYEONGGI", 강원: "GANGWON", 충북: "CHUNGBUK", 충남: "CHUNGNAM",
   전북: "JEONBUK", 전남: "JEONNAM", 경북: "GYEONGBUK", 경남: "GYEONGNAM", 제주: "JEJU",
-};
-const regionOptions = Object.keys(regionMap);
-const statusList = ["전체", "접수 중", "접수 마감"];
-const targetMap = { 전체: undefined, 청년: "YOUNG", "1인가구": "ALONE", "65세 이상": "ELDER" };
-const targetOptions = Object.keys(targetMap);
+} as const;
+const regionOptions = Object.keys(regionMap) as (keyof typeof regionMap)[];
+
+const statusList = ["전체", "임대 중", "임대 마감"];
+const targetMap = {
+  전체: undefined,
+  청년: "YOUNG",
+  "1인가구": "ALONE",
+  "65세 이상": "ELDER"
+} as const;
+const targetOptions = Object.keys(targetMap) as (keyof typeof targetMap)[];
 
 const Category3Page = () => {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [status, setStatus] = useState("전체");
-  const [region, setRegion] = useState("전체");
-  const [target, setTarget] = useState("전체");
+  const [region, setRegion] = useState<keyof typeof regionMap>("전체");
+  const [target, setTarget] = useState<keyof typeof targetMap>("전체");
 
   const [list, setList] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
@@ -42,9 +49,9 @@ const Category3Page = () => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const params: any = { type: "REPAIRMENT" };
-        if (regionMap[region]) params.region = regionMap[region];
-        if (targetMap[target]) params.target = targetMap[target];
+        const params: any = { type: "RENT" };
+        if (region !== "전체") params.region = regionMap[region];
+        if (target !== "전체") params.target = targetMap[target];
         const res = await fetchAnnouncements(params);
         setList(res);
       } catch (e) {
@@ -64,8 +71,8 @@ const Category3Page = () => {
       let isOpen = diff >= 0;
 
       let statusMatch = true;
-      if (status === "접수 중") statusMatch = isOpen;
-      if (status === "접수 마감") statusMatch = !isOpen;
+      if (status === "임대 중") statusMatch = isOpen;
+      if (status === "임대 마감") statusMatch = !isOpen;
 
       const searchMatch = !search || item.title.includes(search);
 
@@ -89,7 +96,7 @@ const Category3Page = () => {
 
   return (
     <div className="relative bg-[#f5f5f5] min-h-screen pb-24 overflow-y-auto">
-      <CategoryTopBar title="집 시설 보수 지원" />
+      <CategoryTopBar title="임대 중인 장애인 주택" />
 
       <CategoryFilterBar
         search={search}
