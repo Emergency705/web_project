@@ -1,23 +1,40 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import CategoryFilter from "../../components/purchase/CategoryFilter";
 import ProductCard from "../../components/purchase/ProductCard";
-import {
-  mockProducts,
-  mockCategories,
-  mockCarouselProducts,
-} from "../../apis/mock/purchase";
+import { getFundingList, type FundingItem } from "../../apis/purchase";
 import { FiSearch } from "react-icons/fi";
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 import { VscSettings } from "react-icons/vsc";
+import { mockCategories } from "../../data/tempMocks";
 
 const PurchaseListPage = () => {
   const [current, setCurrent] = useState(0);
+  const [products, setProducts] = useState<FundingItem[]>([]);
+  const [carouselProducts, setCarouselProducts] = useState<FundingItem[]>([]);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const productList = await getFundingList();
+        setProducts(productList);
+        // TODO: 캐러셀에 보여줄 데이터를 별도로 필터링하거나, API가 따로 필요할 수 있습니다.
+        // 우선 전체 목록에서 2개만 잘라서 사용합니다.
+        setCarouselProducts(productList.slice(0, 2));
+      } catch (error) {
+        console.error("상품 목록을 불러오는데 실패했습니다:", error);
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
   const prevSlide = () => {
-    setCurrent(current === 0 ? mockCarouselProducts.length - 1 : current - 1);
+    if (carouselProducts.length === 0) return;
+    setCurrent(current === 0 ? carouselProducts.length - 1 : current - 1);
   };
   const nextSlide = () => {
-    setCurrent(current === mockCarouselProducts.length - 1 ? 0 : current + 1);
+    if (carouselProducts.length === 0) return;
+    setCurrent(current === carouselProducts.length - 1 ? 0 : current + 1);
   };
 
   return (
@@ -52,49 +69,51 @@ const PurchaseListPage = () => {
       </div>
 
       {/* Product Carousel */}
-      <div className="relative h-44 mx-4 overflow-hidden">
-        {mockCarouselProducts.map((product, index) => (
-          <div
-            key={product.id}
-            className={`absolute top-0 left-0 w-full h-full transition-opacity duration-500 ${
-              index === current ? "opacity-100" : "opacity-0"
-            }`}
-          >
-            <div className="relative w-full h-full bg-gray-100 rounded-lg p-4 flex flex-col justify-between">
-              <div className="relative z-10">
-                <p className="font-bold text-lg text-[#538E79]">
-                  {product.participants}/{product.maxParticipants}명
-                </p>
-                <h3 className="font-bold text-xl">{product.name}</h3>
-                <p className="font-semibold text-gray-800">
-                  현재 가격: {product.currentPrice.toLocaleString()}원/1장
-                </p>
-                <p className="text-sm text-gray-500">{product.location}</p>
-              </div>
-              <img
-                src={product.imageUrl}
-                alt={product.name}
-                className="absolute right-0 bottom-0 w-40 h-40 object-contain"
-              />
-              <div className="absolute bottom-2 right-2 bg-black/40 text-white text-xs px-2 py-1 rounded-full z-10">
-                {current + 1}/{product.imageCount}
+      {carouselProducts.length > 0 && (
+        <div className="relative h-44 mx-4 overflow-hidden">
+          {carouselProducts.map((product, index) => (
+            <div
+              key={product.id}
+              className={`absolute top-0 left-0 w-full h-full transition-opacity duration-500 ${
+                index === current ? "opacity-100" : "opacity-0"
+              }`}
+            >
+              <div className="relative w-full h-full bg-gray-100 rounded-lg p-4 flex flex-col justify-between">
+                <div className="relative z-10">
+                  <p className="font-bold text-lg text-[#538E79]">
+                    {product.currentCount}명 참여
+                  </p>
+                  <h3 className="font-bold text-xl">{product.name}</h3>
+                  <p className="font-semibold text-gray-800">
+                    현재 가격: {product.currentPrice.toLocaleString()}원
+                  </p>
+                  <p className="text-sm text-gray-500">{product.placeType}</p>
+                </div>
+                <img
+                  src={product.imageUrl || product.image}
+                  alt={product.name}
+                  className="absolute right-0 bottom-0 w-40 h-40 object-contain"
+                />
+                <div className="absolute bottom-2 right-2 bg-black/40 text-white text-xs px-2 py-1 rounded-full z-10">
+                  {current + 1}/{carouselProducts.length}
+                </div>
               </div>
             </div>
-          </div>
-        ))}
-        <button
-          onClick={prevSlide}
-          className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/70 p-1 rounded-full shadow-md z-20"
-        >
-          <IoIosArrowBack size={18} />
-        </button>
-        <button
-          onClick={nextSlide}
-          className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/70 p-1 rounded-full shadow-md z-20"
-        >
-          <IoIosArrowForward size={18} />
-        </button>
-      </div>
+          ))}
+          <button
+            onClick={prevSlide}
+            className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/70 p-1 rounded-full shadow-md z-20"
+          >
+            <IoIosArrowBack size={18} />
+          </button>
+          <button
+            onClick={nextSlide}
+            className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/70 p-1 rounded-full shadow-md z-20"
+          >
+            <IoIosArrowForward size={18} />
+          </button>
+        </div>
+      )}
 
       {/* Category Filter */}
       <div className="px-4 pt-8 pb-6">
@@ -106,8 +125,19 @@ const PurchaseListPage = () => {
 
       {/* Product Grid */}
       <div className="grid grid-cols-2 gap-x-4 gap-y-6 px-4">
-        {mockProducts.map((product) => (
-          <ProductCard key={product.id} product={product} />
+        {products.map((product) => (
+          <ProductCard
+            key={product.id}
+            product={{
+              id: product.id,
+              name: product.name,
+              imageUrl: product.imageUrl || product.image || "",
+              currentPrice: product.currentPrice,
+              location: product.placeType,
+              participants: product.currentCount,
+              maxParticipants: 100,
+            }}
+          />
         ))}
       </div>
     </div>

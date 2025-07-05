@@ -1,3 +1,4 @@
+
 import React, { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import backIcon from '../assets/backButton.svg';
@@ -18,10 +19,11 @@ const EditProfile = () => {
 
   const [name, setName] = useState('김하은');
   const [region, setRegion] = useState('서울');
-  const [birth, setBirth] = useState('');
+  const [birth, setBirth] = useState('')
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
   const [selectedLevel, setSelectedLevel] = useState("");
 
+  // 파일 인풋 onChange → 파일 받아서 이미지 적용!
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -69,7 +71,6 @@ const EditProfile = () => {
       <button onClick={() => navigate(-1)} className="absolute left-4 top-4">
         <img src={backIcon} alt="뒤로가기" className="w-6 h-6" />
       </button>
-
       <input
         ref={fileInputRef}
         type="file"
@@ -88,7 +89,6 @@ const EditProfile = () => {
             />
           )}
         </div>
-        <button
           type="button"
           className="absolute right-[calc(50%-48px)] bottom-0 translate-x-1/2 translate-y-1/2 bg-white border border-gray-300 rounded-full p-2 shadow cursor-pointer"
           onClick={() => setShowImageMenu((v) => !v)}
@@ -153,7 +153,6 @@ const EditProfile = () => {
           ▼
         </span>
       </div>
-
       <label className="block mb-1 font-bold text-base">
         생년월일을 알려주세요!
       </label>

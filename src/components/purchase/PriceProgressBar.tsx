@@ -1,35 +1,40 @@
 import React from "react";
 
-const PriceProgressBar: React.FC = () => {
-  const progress = 48; // 현재 참여 인원 (48명 기준)
-  const max = 100;
-  const percentage = (progress / max) * 100;
+interface PriceProgressBarProps {
+  currentPrice: number;
+  startPrice: number;
+  maxPrice: number;
+}
+
+const PriceProgressBar: React.FC<PriceProgressBarProps> = ({
+  currentPrice,
+  startPrice,
+  maxPrice,
+}) => {
+  // maxPrice가 startPrice와 같거나 작으면 0으로 나눌 수 없으므로 100%로 처리하거나 0%로 처리
+  const progress =
+    maxPrice > startPrice
+      ? ((currentPrice - startPrice) / (maxPrice - startPrice)) * 100
+      : currentPrice >= maxPrice
+      ? 100
+      : 0;
+  const clampedProgress = Math.min(100, Math.max(0, progress)); // 0%와 100% 사이로 값 제한
 
   return (
-    <div className="w-full my-4">
-      <div className="relative h-2 bg-gray-200 rounded-full">
+    <div className="mt-4">
+      <div className="flex justify-between text-xs text-gray-500 mb-1">
+        <span>{startPrice.toLocaleString()}원</span>
+        <span>{maxPrice.toLocaleString()}원</span>
+      </div>
+      <div className="w-full bg-gray-200 rounded-full h-2.5">
         <div
-          className="absolute top-0 left-0 h-2 bg-[#538E79] rounded-full"
-          style={{ width: `${percentage}%` }}
-        ></div>
-        <div
-          className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-white border-2 border-[#538E79] rounded-full"
-          style={{ left: `${percentage}%` }}
+          className="bg-[#D3E4D6] h-2.5 rounded-full"
+          style={{ width: `${clampedProgress}%` }}
         ></div>
       </div>
-      <div className="flex justify-between text-xs text-gray-500 mt-2 px-1">
-        <div>
-          <p className="font-bold">1개</p>
-          <p>16,000원</p>
-        </div>
-        <div className="text-center">
-          <p className="font-bold text-[#538E79]">{progress}개</p>
-          <p className="text-[#538E79]">14,000원</p>
-        </div>
-        <div className="text-right">
-          <p className="font-bold">100개</p>
-          <p>13,000원</p>
-        </div>
+      <div className="flex justify-between text-xs text-gray-500 mt-1">
+        <span>시작가</span>
+        <span>최대 할인가</span>
       </div>
     </div>
   );
