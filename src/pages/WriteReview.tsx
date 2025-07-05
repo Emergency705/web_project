@@ -1,34 +1,56 @@
-import { useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { FiChevronLeft } from 'react-icons/fi'; // 뒤로가기 아이콘(react-icons 사용)
-
-const dummyFundings: Record<number, { title: string }> = {
-  1: {
-    title: '욕실 미끄럼 방지 매트',
-  },
-  2: {
-    title: '기타 펀딩 제품',
-  },
-};
+import { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { FiChevronLeft } from "react-icons/fi";
+import {
+  getFundingDetail,
+  createReview,
+  type FundingItem,
+} from "../apis/purchase";
 
 const WriteReview = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [content, setContent] = useState('');
+  const [funding, setFunding] = useState<FundingItem | null>(null);
+  const [content, setContent] = useState("");
 
-  const funding = dummyFundings[Number(id)];
+  useEffect(() => {
+    if (id) {
+      const numericId = parseInt(id, 10);
+      getFundingDetail(numericId)
+        .then(setFunding)
+        .catch((err) => {
+          console.error(err);
+          alert("펀딩 정보를 불러오는데 실패했습니다.");
+          navigate(-1);
+        });
+    }
+  }, [id, navigate]);
 
-  const handleSubmit = () => {
-    console.log('작성한 기대평:', {
-      productId: id,
-      content,
-    });
-    alert('기대평이 저장되었습니다!');
-    navigate('/my-fundings');
+  const handleSubmit = async () => {
+    if (!funding || !content.trim()) {
+      alert("기대평을 입력해주세요.");
+      return;
+    }
+
+    try {
+      await createReview({
+        itemId: funding.itemId,
+        content: content,
+      });
+      alert("기대평이 성공적으로 등록되었습니다!");
+      navigate(`/purchase/${funding.itemId}`);
+    } catch (err) {
+      console.error(err);
+      alert("기대평 등록에 실패했습니다.");
+    }
   };
 
   if (!funding) {
-    return <p className="text-center text-red-500">해당 펀딩을 찾을 수 없습니다.</p>;
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <p>펀딩 정보를 불러오는 중...</p>
+      </div>
+    );
   }
 
   return (
@@ -45,9 +67,7 @@ const WriteReview = () => {
       </div>
 
       {/* 제품명 */}
-      <div className="text-lg font-bold mb-2">
-        {funding.title}
-      </div>
+      <div className="text-lg font-bold mb-2">{funding.name}</div>
 
       {/* 기대평 입력창 */}
       <textarea
@@ -61,7 +81,8 @@ const WriteReview = () => {
       {/* 완료 버튼 */}
       <button
         onClick={handleSubmit}
-        className="w-full bg-[#538E79] text-white py-3 rounded-lg font-bold text-base"
+        className="w-full bg-[#538E79] text-white py-3 rounded-lg font-bold text-base disabled:bg-gray-400"
+        disabled={!content.trim()}
       >
         완료
       </button>

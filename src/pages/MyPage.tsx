@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchMyInfo } from "../apis/user";
 import type { UserInfo } from "../apis/user";
+
 const profileImg =
   "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=facearea&w=128&q=80";
 
@@ -19,7 +20,7 @@ const MyPage = () => {
   useEffect(() => {
     fetchMyInfo()
       .then(setUser)
-      .catch(e => {
+      .catch((e: Error) => {
         alert(e.message || "내 정보를 불러오지 못했습니다.");
       })
       .finally(() => setLoading(false));
@@ -68,7 +69,7 @@ const MyPage = () => {
       <div className="flex items-center mb-6">
         {/* 프로필 사진 (실제 이미지 url 나오면 user.profileImage로 교체!) */}
         <img
-          src={profileImg}
+          src={user?.profileImage || profileImg}
           alt="프로필"
           className="w-14 h-14 rounded-full object-cover border mr-3"
         />
@@ -131,10 +132,7 @@ const MyPage = () => {
         >
           로그아웃
         </div>
-        <div
-          className="text-gray-700 cursor-pointer"
-          onClick={handleWithdraw}
-        >
+        <div className="text-gray-700 cursor-pointer" onClick={handleWithdraw}>
           회원탈퇴
         </div>
       </div>

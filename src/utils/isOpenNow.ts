@@ -1,7 +1,6 @@
 // src/utils/isOpenNow.ts
 
 function parseDayRange(days: string): number[] {
-  // "월-금" → [1,2,3,4,5], "월,수,금" → [1,3,5], "토" → [6], "일" → [0]
   const dayNames = ["일", "월", "화", "수", "목", "금", "토"];
   let result: number[] = [];
 

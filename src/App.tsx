@@ -20,7 +20,6 @@ import CompletePage from "./pages/signup/CompletePage";
 // 구매 관련 페이지
 import PurchaseListPage from "./pages/purchase/PurchaseListPage";
 import PurchaseDetailPage from "./pages/purchase/PurchaseDetailPage";
-import RegisterCommentPage from "./pages/purchase/RegisterCommentPage";
 
 // Protected Pages
 import HomePage from "./pages/HomePage";
@@ -34,6 +33,8 @@ import GoodbyePage from "./pages/GoodbyePage";
 import MyFundings from "./pages/MyFundings";
 import WriteReview from "./pages/WriteReview";
 import SavedPosts from "./pages/SavedPosts";
+import EditFunding from "./pages/EditFunding";
+import EditProfile from "./pages/EditProfile";
 import AnnouncementDetailPage from "./pages/AnnouncementDetailPage";
 
 // 인증된 사용자를 위한 레이아웃 (조건부 BottomNavBar)
@@ -97,15 +98,15 @@ function App() {
           <Route path="/mypage" element={<MyPage />} />
           <Route path="/purchasle" element={<PurchaseListPage />} />
           <Route path="/purchase/:id" element={<PurchaseDetailPage />} />
-          <Route
-            path="/purchase/:id/comment"
-            element={<RegisterCommentPage />}
-          />
-          
+          <Route path="/purchase/:id/comment" element={<WriteReview />} />
+          <Route path="/edit-profile" element={<EditProfile/>} />
           <Route path="/goodbye" element={<GoodbyePage />} />
           <Route path="/my-fundings" element={<MyFundings />} />
           <Route path="/write-review/:id" element={<WriteReview />} />
           <Route path="/saved-posts" element={<SavedPosts />} />
+          <Route path="/edit-funding/:id" element={<EditFunding />} />
+
+          {/* 카테고리별 페이지 라우트 */}
           <Route path="/category1" element={<Category1Page />} />
           <Route path="/category2" element={<Category2Page />} />
           <Route path="/category3" element={<Category3Page />} />
