@@ -6,7 +6,7 @@ import { signup } from "../../apis/auth";
 import type { SignupRequest } from "../../apis/auth";
 
 const DISABILITY_TYPES = [
-  "지적장애",
+  "지체장애",
   "청각장애",
   "시각장애",
   "뇌병변장애",
