@@ -26,7 +26,7 @@ export interface Review {
 }
 
 export interface FundingItem {
-  id: number;
+  itemId: number;
   name: string;
   description: string;
   imageUrl?: string; // 상세 조회 응답 필드
@@ -122,8 +122,8 @@ export const deleteFunding = async (itemId: number) => {
  * @param data { itemId, content }
  */
 export const createReview = async (data: CreateReviewRequest) => {
-  // Swagger 명세상 query로 되어있으나, content가 포함되어 body로 전송하는 것이 일반적입니다.
-  // 만약 오류 발생 시, createFunding과 같이 params로 보내도록 수정이 필요할 수 있습니다.
-  const response = await api.post<ApiResponse<object>>("/review", data);
+  const response = await api.post<ApiResponse<object>>("/review", null, {
+    params: data,
+  });
   return response.data;
 };

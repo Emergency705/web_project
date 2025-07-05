@@ -20,7 +20,6 @@ import CompletePage from "./pages/signup/CompletePage";
 // 구매 관련 페이지
 import PurchaseListPage from "./pages/purchase/PurchaseListPage";
 import PurchaseDetailPage from "./pages/purchase/PurchaseDetailPage";
-import RegisterCommentPage from "./pages/purchase/RegisterCommentPage";
 
 // Protected Pages
 import HomePage from "./pages/HomePage";
@@ -98,10 +97,7 @@ function App() {
           <Route path="/counsel" element={<CounselPage />} />
           <Route path="/purchase" element={<PurchaseListPage />} />
           <Route path="/purchase/:id" element={<PurchaseDetailPage />} />
-          <Route
-            path="/purchase/:id/comment"
-            element={<RegisterCommentPage />}
-          />
+          <Route path="/purchase/:id/comment" element={<WriteReview />} />
           <Route path="/edit-profile" element={<EditProfile />} />
           <Route path="/goodbye" element={<GoodbyePage />} />
           <Route path="/my-fundings" element={<MyFundings />} />

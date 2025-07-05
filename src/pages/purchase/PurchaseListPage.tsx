@@ -73,7 +73,7 @@ const PurchaseListPage = () => {
         <div className="relative h-44 mx-4 overflow-hidden">
           {carouselProducts.map((product, index) => (
             <div
-              key={product.id}
+              key={product.itemId}
               className={`absolute top-0 left-0 w-full h-full transition-opacity duration-500 ${
                 index === current ? "opacity-100" : "opacity-0"
               }`}
@@ -127,9 +127,9 @@ const PurchaseListPage = () => {
       <div className="grid grid-cols-2 gap-x-4 gap-y-6 px-4">
         {products.map((product) => (
           <ProductCard
-            key={product.id}
+            key={product.itemId}
             product={{
-              id: product.id,
+              id: product.itemId,
               name: product.name,
               imageUrl: product.imageUrl || product.image || "",
               currentPrice: product.currentPrice,
