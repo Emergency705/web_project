@@ -16,8 +16,7 @@ type ProfileFormInputs = z.infer<typeof profileSchema>;
 
 const ProfilePage = () => {
   const navigate = useNavigate();
-  const { name, birthDate, profileImagePreview, updateFormData } =
-    useSignupStore();
+  const { name, birthDate, profileImage, updateFormData } = useSignupStore();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const {
@@ -38,9 +37,10 @@ const ProfilePage = () => {
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
+        const base64String = reader.result as string;
+        const pureBase64 = base64String.split(",")[1];
         updateFormData({
-          profileImage: file,
-          profileImagePreview: reader.result as string,
+          profileImage: pureBase64,
         });
       };
       reader.readAsDataURL(file);
@@ -75,9 +75,9 @@ const ProfilePage = () => {
                 className="w-32 h-32 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden"
                 onClick={handleImageUploadClick}
               >
-                {profileImagePreview ? (
+                {profileImage ? (
                   <img
-                    src={profileImagePreview}
+                    src={`data:image/jpeg;base64,${profileImage}`}
                     alt="Profile Preview"
                     className="w-full h-full object-cover"
                   />

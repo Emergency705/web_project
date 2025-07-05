@@ -28,12 +28,13 @@ interface ApiResponse<T> {
 export interface SignupRequest {
   name: string;
   loginId: string;
-  password: string;
+  password?: string;
   birth: string; // "YYYY-MM-DD"
-  regionId: number;
-  // TODO: 백엔드와 필드 이름 최종 확인 필요
-  disabilityLevel: number | null; // 심함: 1, 심하지 않음: 0, 비장애인: null
-  disabilityTypes: number[]; // 장애 유형 인덱스 배열, 비장애인: []
+  region: string | null;
+  disable: string | null;
+  hardness: string | null;
+  disableType: string | null;
+  profileImage: string | null;
 }
 
 // 회원가입 응답 결과 (POST /users/join)
