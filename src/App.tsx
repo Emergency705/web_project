@@ -25,17 +25,13 @@ function App() {
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/mypage" element={<MyPage />} />
           <Route path="/counsel" element={<CounselPage />} />
-<<<<<<< HEAD
           <Route path="/edit-profile" element={<EditProfile />} /> {/* 추가 */}
           <Route path="/goodbye" element={<GoodbyePage />} /> {/* 추가 */}
-=======
-
           {/* 카테고리별 페이지 라우트 */}
           <Route path="/category1" element={<Category1Page />} />
           <Route path="/category2" element={<Category2Page />} />
           <Route path="/category3" element={<Category3Page />} />
           <Route path="/category4" element={<Category4Page />} />
->>>>>>> 09ce8386a2f6b9eff7d9ff654f3f4909ee48c141
         </Routes>
         <BottomNavBar />
       </div>
