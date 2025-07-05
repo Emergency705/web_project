@@ -35,7 +35,7 @@ import GoodbyePage from "./pages/GoodbyePage";
 import MyFundings from "./pages/MyFundings";
 import WriteReview from "./pages/WriteReview";
 import SavedPosts from "./pages/SavedPosts";
-import EditFunding from "./pages/EditFunding";
+import AnnouncementDetailPage from "./pages/AnnouncementDetailPage";
 
 // 인증된 사용자를 위한 레이아웃 (조건부 BottomNavBar)
 const ProtectedLayout = () => {
@@ -83,6 +83,8 @@ function App() {
           <Route path="/signup/profile" element={<ProfilePage />} />
           <Route path="/signup/extra" element={<ExtraPage />} />
           <Route path="/signup/complete" element={<CompletePage />} />
+          
+          
         </Route>
 
         {/* 인증이 필요한 페이지 */}
@@ -95,8 +97,7 @@ function App() {
         >
           <Route path="/home" element={<HomePage />} />
           <Route path="/mypage" element={<MyPage />} />
-          <Route path="/counsel" element={<CounselPage />} />
-          <Route path="/purchase" element={<PurchaseListPage />} />
+          <Route path="/purchasle" element={<PurchaseListPage />} />
           <Route path="/purchase/:id" element={<PurchaseDetailPage />} />
           <Route
             path="/purchase/:id/comment"
@@ -112,6 +113,8 @@ function App() {
           <Route path="/category2" element={<Category2Page />} />
           <Route path="/category3" element={<Category3Page />} />
           <Route path="/category4" element={<Category4Page />} />
+          <Route path="/counsel" element={<CounselPage />} />
+          <Route path="/announcements/:id" element={<AnnouncementDetailPage />} />
         </Route>
       </Routes>
     </BrowserRouter>
