@@ -1,48 +1,73 @@
 // src/utils/isOpenNow.ts
 
+function parseDayRange(days: string): number[] {
+  // "월-금" → [1,2,3,4,5], "월,수,금" → [1,3,5], "토" → [6], "일" → [0]
+  const dayNames = ["일", "월", "화", "수", "목", "금", "토"];
+  let result: number[] = [];
+
+  // 여러개: "월,수,금"
+  if (days.includes(",")) {
+    return days.split(",").map(d => dayNames.indexOf(d.trim())).filter(x => x !== -1);
+  }
+  // 범위: "월-금"
+  if (days.includes("-")) {
+    const [from, to] = days.split("-").map(d => dayNames.indexOf(d.trim()));
+    if (from !== -1 && to !== -1) {
+      // 0~6 사이에서 from부터 to까지
+      for (let i = from; ; i = (i + 1) % 7) {
+        result.push(i);
+        if (i === to) break;
+      }
+    }
+    return result;
+  }
+  // 단일: "월"
+  const idx = dayNames.indexOf(days.trim());
+  if (idx !== -1) result.push(idx);
+  return result;
+}
+
 export function isOpenNow(timeStr: string): boolean {
-  // 오늘 요일: 0(일)~6(토)
   const now = new Date();
-  const day = now.getDay(); // 0=일, 1=월 ... 6=토
+  const day = now.getDay(); // 0(일)~6(토)
   const hour = now.getHours();
   const min = now.getMinutes();
 
-  const segments = timeStr.split("/");
-  let matched = false;
+  const nowMin = hour * 60 + min;
 
+  const segments = timeStr.split("/");
   for (const seg of segments) {
     const part = seg.trim();
+    if (!part) continue;
+
     const [days, times] = part.split(" ");
-    let daysMatched = false;
     if (!days || !times) continue;
 
     // 요일 매칭
-    if (days.includes("월-금") && day >= 1 && day <= 5) daysMatched = true;
-    if (days.includes("토") && day === 6) daysMatched = true;
-    if (days.includes("일") && day === 0) daysMatched = true;
-    if (days.includes("월") && !days.includes("-") && day === 1) daysMatched = true;
-    if (days.includes("화") && !days.includes("-") && day === 2) daysMatched = true;
-    if (days.includes("수") && !days.includes("-") && day === 3) daysMatched = true;
-    if (days.includes("목") && !days.includes("-") && day === 4) daysMatched = true;
-    if (days.includes("금") && !days.includes("-") && day === 5) daysMatched = true;
-
-    if (!daysMatched) continue;
+    const daysArr = parseDayRange(days);
+    if (!daysArr.includes(day)) continue;
 
     // 시간 매칭
     const [start, end] = times.split("~").map(t => t.trim());
     if (!start || !end) continue;
 
-    const [startH, startM] = start.split(":").map(Number);
-    const [endH, endM] = end.split(":").map(Number);
+    let [startH, startM] = start.split(":").map(Number);
+    let [endH, endM] = end.split(":").map(Number);
 
-    const nowMin = hour * 60 + min;
-    const startMin = startH * 60 + startM;
-    const endMin = endH * 60 + endM;
-
-    if (nowMin >= startMin && nowMin <= endMin) {
-      matched = true;
-      break;
+    let startMin = startH * 60 + startM;
+    let endMin = endH * 60 + endM;
+    // 24:00 → 1440분, 00:00 → 0분, 심야영업 처리
+    if (endMin === 0 && endH === 0 && endM === 0) endMin = 24 * 60;
+    if (endMin < startMin) {
+      // 심야영업: 22:00~04:00 → 두 구간 중 하나라도 들어가면 ok
+      if ((nowMin >= startMin && nowMin < 24 * 60) || (nowMin >= 0 && nowMin <= endMin)) {
+        return true;
+      }
+    } else {
+      if (nowMin >= startMin && nowMin <= endMin) {
+        return true;
+      }
     }
   }
-  return matched;
+  return false;
 }

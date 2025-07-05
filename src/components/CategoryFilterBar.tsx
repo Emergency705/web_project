@@ -18,17 +18,22 @@ const CategoryFilterBar = ({
     <div className="flex items-center gap-2">
       <div className="flex-1 relative">
         <input
-          className="border border-blue-200 px-3 py-2 rounded-2xl w-full text-base"
+          className="
+            w-full bg-gray-100 border-none rounded-lg py-3 pl-4 pr-10
+            focus:ring-2 focus:ring-[#538E79] focus:outline-none text-base
+            shadow-sm placeholder:text-gray-400
+          "
           value={search}
           onChange={e => onSearchChange(e.target.value)}
-          placeholder="공고명 검색"
+          placeholder="원하는 공고를 검색해보세요!"
         />
-        <button className="absolute right-2 top-1/2 -translate-y-1/2 p-1">
-          <FiSearch size={22} />
-        </button>
+        <FiSearch
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+          size={20}
+        />
       </div>
       <button
-        className="flex items-center gap-1 text-sm text-gray-700 border border-gray-300 px-3 py-1 rounded min-w-[64px] bg-white"
+        className="flex items-center gap-1 text-sm text-gray-700 border border-gray-300 px-3 py-2 rounded-lg min-w-[64px] bg-white shadow-sm"
         onClick={onFilterOpen}
       >
         <FiFilter size={16} />

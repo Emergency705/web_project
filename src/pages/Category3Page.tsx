@@ -1,8 +1,14 @@
+<<<<<<< HEAD
 import React, { useState, useMemo} from "react";
+=======
+import React, { useState, useEffect, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
+>>>>>>> 28731001ea33955fce6e5fb8dd11f217de58cb71
 import CategoryTopBar from "../components/CategoryTopBar";
 import AnnouncementCard from "../components/AnnouncementCard";
 import CategoryFilterBar from "../components/CategoryFilterBar";
 import CategoryFilterModal from "../components/CategoryFilterModal";
+<<<<<<< HEAD
 const DUMMY = [
   {
     id: 1,
@@ -37,37 +43,76 @@ const DUMMY = [
   // ...추가 더미 데이터
 ];
 
+=======
+import { fetchAnnouncements } from "../apis/announcements";
+import dayjs from "dayjs";
+
+const regionMap = {
+  전체: undefined,
+  서울: "SEOUL", 부산: "BUSAN", 대구: "DAEGU", 인천: "INCHEON",
+  광주: "GWANGJU", 대전: "DAEJEON", 울산: "ULSAN", 세종: "SEJONG",
+  경기: "GYEONGGI", 강원: "GANGWON", 충북: "CHUNGBUK", 충남: "CHUNGNAM",
+  전북: "JEONBUK", 전남: "JEONNAM", 경북: "GYEONGBUK", 경남: "GYEONGNAM", 제주: "JEJU",
+};
+const regionOptions = Object.keys(regionMap);
+>>>>>>> 28731001ea33955fce6e5fb8dd11f217de58cb71
 const statusList = ["전체", "접수 중", "접수 마감"];
-const regionList = ["ALL", "서울", "경기", "인천"];
-const targetList = ["ALL", "장애인", "1인가구", "65세 이상"];
+const targetMap = { 전체: undefined, 청년: "YOUNG", "1인가구": "ALONE", "65세 이상": "ELDER" };
+const targetOptions = Object.keys(targetMap);
 
 const Category3Page = () => {
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [status, setStatus] = useState("전체");
-  const [region, setRegion] = useState("ALL");
-  const [target, setTarget] = useState("ALL");
+  const [region, setRegion] = useState("전체");
+  const [target, setTarget] = useState("전체");
+
+  const [list, setList] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
 
   const filterTags = useMemo(() => {
     const tags = [];
     if (status !== "전체") tags.push(status);
-    if (region !== "ALL") tags.push(region);
-    if (target !== "ALL") tags.push(target);
+    if (region !== "전체") tags.push(region);
+    if (target !== "전체") tags.push(target);
     return tags;
   }, [status, region, target]);
 
-  const filtered = DUMMY.filter(item => {
-    const searchMatch = !search || item.title.includes(search);
-    const statusMatch =
-      status === "전체"
-        ? true
-        : status === "접수 중"
-        ? item.recruit
-        : !item.recruit;
-    const regionMatch = region === "ALL" || item.region === region;
-    const targetMatch = target === "ALL" || item.target === target;
-    return searchMatch && statusMatch && regionMatch && targetMatch;
-  });
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const params: any = { type: "REPAIRMENT" };
+        if (regionMap[region]) params.region = regionMap[region];
+        if (targetMap[target]) params.target = targetMap[target];
+        const res = await fetchAnnouncements(params);
+        setList(res);
+      } catch (e) {
+        setList([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, [region, target]);
+
+  const filtered = useMemo(() => {
+    const today = dayjs().startOf("day");
+    return list.filter(item => {
+      const deadline = dayjs(item.openDate, ["YYYY-MM-DD", "YYYY.MM.DD"]);
+      const diff = deadline.diff(today, "day");
+      let isOpen = diff >= 0;
+
+      let statusMatch = true;
+      if (status === "접수 중") statusMatch = isOpen;
+      if (status === "접수 마감") statusMatch = !isOpen;
+
+      const searchMatch = !search || item.title.includes(search);
+
+      return statusMatch && searchMatch;
+    });
+  }, [list, search, status]);
 
   // 모달 드래그
   const [dragStartY, setDragStartY] = useState<number | null>(null);
@@ -75,10 +120,7 @@ const Category3Page = () => {
 
   const onTouchStart = (e: React.TouchEvent<HTMLDivElement>) => setDragStartY(e.touches[0].clientY);
   const onTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
-    if (dragStartY !== null) {
-      const offset = e.touches[0].clientY - dragStartY;
-      setDragOffset(offset > 0 ? offset : 0);
-    }
+    if (dragStartY !== null) setDragOffset(Math.max(0, e.touches[0].clientY - dragStartY));
   };
   const onTouchEnd = () => {
     if (dragOffset > 80) setIsFilterOpen(false);
@@ -89,21 +131,34 @@ const Category3Page = () => {
   return (
     <div className="relative bg-[#f5f5f5] min-h-screen pb-24 overflow-y-auto">
       <CategoryTopBar title="집 시설 보수 지원" />
+
       <CategoryFilterBar
         search={search}
         onSearchChange={setSearch}
         onFilterOpen={() => setIsFilterOpen(true)}
         filterTags={filterTags}
       />
+
       <div className="flex flex-col gap-4 pt-4 px-4">
-        {filtered.length === 0 ? (
+        {loading ? (
+          <div className="text-center text-gray-400 mt-10">로딩중...</div>
+        ) : filtered.length === 0 ? (
           <div className="text-center text-gray-400 mt-10">검색 결과가 없습니다.</div>
         ) : (
           filtered.map(item => (
-            <AnnouncementCard key={item.id} {...item} />
+            <AnnouncementCard
+              key={item.id}
+              id={item.id}
+              title={item.title}
+              region={item.region}
+              target={item.target}
+              openDate={item.openDate}
+              onClick={() => navigate(`/announcements/${item.id}`)}
+            />
           ))
         )}
       </div>
+
       {isFilterOpen && (
         <CategoryFilterModal
           isOpen={isFilterOpen}
@@ -115,8 +170,8 @@ const Category3Page = () => {
           target={target}
           setTarget={setTarget}
           statusList={statusList}
-          regionList={regionList}
-          targetList={targetList}
+          regionList={regionOptions}
+          targetList={targetOptions}
           onTouchStart={onTouchStart}
           onTouchMove={onTouchMove}
           onTouchEnd={onTouchEnd}
