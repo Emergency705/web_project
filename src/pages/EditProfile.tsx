@@ -1,23 +1,30 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import backIcon from '../assets/backButton.svg';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import backIcon from "../assets/backButton.svg";
 
 const disabilityTypes = [
-  '지체장애', '청각장애', '시각장애', '뇌병변장애',
-  '언어장애', '안면장애', '지적장애', '자폐성장애', '정신장애',
+  "지체장애",
+  "청각장애",
+  "시각장애",
+  "뇌병변장애",
+  "언어장애",
+  "안면장애",
+  "지적장애",
+  "자폐성장애",
+  "정신장애",
 ];
 
-const disabilityLevels = ['정도가 심함', '정도가 심하지 않음'];
+const disabilityLevels = ["정도가 심함", "정도가 심하지 않음"];
 
 const EditProfile = () => {
   const navigate = useNavigate();
 
   const [profileImage, setProfileImage] = useState<string | null>(null);
-  const [name, setName] = useState('김하은');
-  const [region, setRegion] = useState('서울');
-  const [birth, setBirth] = useState('');
+  const [name, setName] = useState("김하은");
+  const [region, setRegion] = useState("서울");
+  const [birth, setBirth] = useState("");
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
-  const [selectedLevel, setSelectedLevel] = useState('');
+  const [selectedLevel, setSelectedLevel] = useState("");
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -43,8 +50,8 @@ const EditProfile = () => {
       disabilityLevel: selectedLevel,
       profileImage,
     };
-    console.log('저장된 데이터:', data);
-    navigate('/mypage');
+    console.log("저장된 데이터:", data);
+    navigate("/mypage");
   };
 
   return (
@@ -58,7 +65,11 @@ const EditProfile = () => {
         {/* 프로필 이미지 */}
         <div className="w-20 h-20 rounded-full bg-black overflow-hidden mb-2 flex items-center justify-center">
           {profileImage && (
-            <img src={profileImage} alt="profile" className="w-full h-full object-cover" />
+            <img
+              src={profileImage}
+              alt="profile"
+              className="w-full h-full object-cover"
+            />
           )}
         </div>
         {/* 이미지 버튼 */}
@@ -96,7 +107,6 @@ const EditProfile = () => {
         className="w-full border border-gray-300  p-2 mb-4 bg-white-50 text-base "
         value={region}
         onChange={(e) => setRegion(e.target.value)}
-        
       >
         <option value="서울">서울</option>
         <option value="부산">부산</option>
@@ -107,7 +117,9 @@ const EditProfile = () => {
       </select>
 
       {/* 생년월일 */}
-      <label className="block mb-1 font-bold text-base">생년월일을 알려주세요!</label>
+      <label className="block mb-1 font-bold text-base">
+        생년월일을 알려주세요!
+      </label>
       <div className="relative mb-6">
         <input
           type="date"
@@ -117,15 +129,23 @@ const EditProfile = () => {
         />
         <span className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
           {/* 캘린더 아이콘  */}
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            
-          </svg>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-5 w-5 text-gray-400"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          ></svg>
         </span>
       </div>
 
       {/* 장애 유형 */}
-      <div className="mb-1 font-bold text-base">본인의 장애 종류를 체크해주세요.</div>
-      <p className="text-gray-500 text-xs mb-1">공식적인 기준을 따라서 체크해주세요!</p>
+      <div className="mb-1 font-bold text-base">
+        본인의 장애 종류를 체크해주세요.
+      </div>
+      <p className="text-gray-500 text-xs mb-1">
+        공식적인 기준을 따라서 체크해주세요!
+      </p>
       <p className="text-gray-500 text-xs mb-2">장애 유형 (중복 선택 가능)</p>
       <div className="flex flex-wrap gap-2 mb-6">
         {disabilityTypes.map((type) => (
@@ -134,9 +154,11 @@ const EditProfile = () => {
             type="button"
             onClick={() => handleTypeToggle(type)}
             className={`px-3 py-1 rounded-[10px] text-sm border font-medium
-              ${selectedTypes.includes(type)
-                ? 'bg-[#8DE1D1] border-black-500 text-black-900'
-                : 'bg-white border-gray-300 text-black-600'}
+              ${
+                selectedTypes.includes(type)
+                  ? "bg-[#8DE1D1] border-black-500 text-black-900"
+                  : "bg-white border-gray-300 text-black-600"
+              }
             `}
           >
             {type}
@@ -153,9 +175,11 @@ const EditProfile = () => {
             type="button"
             onClick={() => setSelectedLevel(level)}
             className={`px-3 py-1 rounded-[10px] text-sm border font-medium
-              ${selectedLevel === level
-                ? 'bg-[#8DE1D1] border-black-500 text-black-900'
-                : 'bg-white border-gray-300 text-black-600'}
+              ${
+                selectedLevel === level
+                  ? "bg-[#8DE1D1] border-black-500 text-black-900"
+                  : "bg-white border-gray-300 text-black-600"
+              }
             `}
           >
             {level}
