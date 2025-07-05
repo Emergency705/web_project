@@ -1,76 +1,48 @@
-import React, { useState, useEffect } from "react";
-import PriceProgressBar from "./PriceProgressBar";
+import React, { useState } from "react";
 import QuantityStepper from "./QuantityStepper";
-import type { Product } from "../../apis/mock/purchase";
-import { IoClose } from "react-icons/io5";
-import usePurchaseStore from "../../stores/purchase";
+import { type FundingItem } from "../../apis/purchase";
 
 interface PriceOfferModalProps {
   isOpen: boolean;
   onClose: () => void;
-  product: Product;
+  product: FundingItem;
+  onConfirm: (quantity: number) => void;
 }
 
 const PriceOfferModal: React.FC<PriceOfferModalProps> = ({
   isOpen,
   onClose,
   product,
+  onConfirm,
 }) => {
   const [quantity, setQuantity] = useState(1);
-  const addOffer = usePurchaseStore((state) => state.addOffer);
-
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "auto";
-    }
-    return () => {
-      document.body.style.overflow = "auto";
-    };
-  }, [isOpen]);
 
   if (!isOpen) return null;
 
   const handleDone = () => {
-    addOffer(product.id);
-    console.log(`Offered to buy ${quantity} of ${product.name}`);
+    onConfirm(quantity);
     onClose();
   };
 
   return (
-    <div
-      className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-end"
-      onClick={onClose}
-    >
-      <div
-        className="bg-white rounded-t-2xl w-full max-w-md p-6 animate-slide-up"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <header className="flex justify-between items-center mb-4">
-          <span className="text-xl font-bold">현재가격</span>
-          <button onClick={onClose} className="text-gray-500">
-            <IoClose size={24} />
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+      <div className="bg-white rounded-t-2xl absolute bottom-0 w-full max-w-md p-6">
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="font-bold text-lg">{product.name}</h3>
+          <button onClick={onClose} className="text-2xl">
+            &times;
           </button>
-        </header>
-
-        <p className="text-2xl font-bold mb-2">
-          {product.currentPrice.toLocaleString()}원
-        </p>
-
-        <PriceProgressBar />
-
-        <QuantityStepper
-          quantity={quantity}
-          setQuantity={setQuantity}
-          price={product.currentPrice}
-          showTotalPrice={false}
-        />
-
-        <div className="mt-8">
+        </div>
+        <div className="space-y-4">
+          <QuantityStepper
+            quantity={quantity}
+            setQuantity={setQuantity}
+            price={product.currentPrice}
+            showTotalPrice
+          />
           <button
             onClick={handleDone}
-            className="w-full bg-[#538E79] text-white py-3.5 rounded-lg font-bold text-lg"
+            className="w-full bg-[#538E79] text-white py-3 rounded-lg font-bold"
           >
             완료
           </button>
