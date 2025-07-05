@@ -29,12 +29,16 @@ const MainLayout = () => (
   </div>
 );
 
+import EditProfile from "./pages/EditProfile"; // 추가
+import GoodbyePage from "./pages/GoodbyePage"; // 추가 (탈퇴 후 이동)
+import MyFundings from "./pages/MyFundings"; // 추가 (내가 참여한 펀딩 목록)
+import WriteReview from "./pages/WriteReview";
 function App() {
   return (
     <BrowserRouter>
       <Routes>
         {/* 인증이 필요 없는 페이지 (공통 레이아웃 없음) */}
-        
+        <Route path="/" element={<IntroPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup/terms" element={<TermsPage />} />
         <Route path="/signup/account" element={<AccountPage />} />
@@ -50,12 +54,14 @@ function App() {
             </ProtectedRoute>
           }
         >
-          <Route path="" element={<IntroPage />} />
           <Route path="/home" element={<HomePage />} />
           <Route path="/mypage" element={<MyPage />} />
           <Route path="/counsel" element={<CounselPage />} />
           <Route path="/purchase" element={<PurchasePage />} />
-
+          <Route path="/edit-profile" element={<EditProfile />} />
+          <Route path="/goodbye" element={<GoodbyePage />} />
+          <Route path="/my-fundings" element={<MyFundings />} />
+          <Route path="/write-review/:id" element={<WriteReview />} />
           {/* 카테고리별 페이지 라우트 */}
           <Route path="/category1" element={<Category1Page />} />
           <Route path="/category2" element={<Category2Page />} />
