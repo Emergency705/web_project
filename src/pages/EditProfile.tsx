@@ -14,7 +14,6 @@ const disabilityTypes = [
   "자폐성장애",
   "정신장애",
 ];
-
 const disabilityLevels = ["정도가 심함", "정도가 심하지 않음"];
 
 const EditProfile = () => {
