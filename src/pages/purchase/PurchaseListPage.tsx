@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import CategoryFilter from "../../components/purchase/CategoryFilter";
 import ProductCard from "../../components/purchase/ProductCard";
 import {
@@ -7,14 +6,12 @@ import {
   mockCategories,
   mockCarouselProducts,
 } from "../../apis/mock/purchase";
-import type { Product } from "../../apis/mock/purchase";
 import { FiSearch } from "react-icons/fi";
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 import { VscSettings } from "react-icons/vsc";
 
 const PurchaseListPage = () => {
   const [current, setCurrent] = useState(0);
-  const navigate = useNavigate();
 
   const prevSlide = () => {
     setCurrent(current === 0 ? mockCarouselProducts.length - 1 : current - 1);
@@ -23,14 +20,10 @@ const PurchaseListPage = () => {
     setCurrent(current === mockCarouselProducts.length - 1 ? 0 : current + 1);
   };
 
-  const handleProductClick = (id: number) => {
-    navigate(`/purchase/${id}`);
-  };
-
   return (
     <div className="bg-white pb-16">
       {/* Header */}
-      <div className="p-4 sticky top-0 bg-white z-10 shadow-sm border-b border-gray-200">
+      <div className="p-4 sticky top-0 bg-white z-10">
         <div className="relative">
           <input
             type="text"
@@ -59,11 +52,8 @@ const PurchaseListPage = () => {
       </div>
 
       {/* Product Carousel */}
-      <div
-        className="relative h-44 mx-4 overflow-hidden cursor-pointer"
-        onClick={() => handleProductClick(mockCarouselProducts[current].id)}
-      >
-        {mockCarouselProducts.map((product: Product, index: number) => (
+      <div className="relative h-44 mx-4 overflow-hidden">
+        {mockCarouselProducts.map((product, index) => (
           <div
             key={product.id}
             className={`absolute top-0 left-0 w-full h-full transition-opacity duration-500 ${
@@ -116,14 +106,8 @@ const PurchaseListPage = () => {
 
       {/* Product Grid */}
       <div className="grid grid-cols-2 gap-x-4 gap-y-6 px-4">
-        {mockProducts.map((product: Product) => (
-          <div
-            key={product.id}
-            onClick={() => handleProductClick(product.id)}
-            className="cursor-pointer"
-          >
-            <ProductCard product={product} />
-          </div>
+        {mockProducts.map((product) => (
+          <ProductCard key={product.id} product={product} />
         ))}
       </div>
     </div>
