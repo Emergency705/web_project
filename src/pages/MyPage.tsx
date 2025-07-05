@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchMyInfo } from "../apis/user";
 import type { UserInfo } from "../apis/user";
