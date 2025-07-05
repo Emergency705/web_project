@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { IoIosArrowBack, IoIosArrowDown } from "react-icons/io";
 import { useSignupStore } from "../../stores/signup";
+import { signup } from "../../apis/auth";
 
 const DISABILITY_TYPES = [
   "지적장애",
@@ -37,21 +38,58 @@ const KOREAN_REGIONS = [
 
 const ExtraPage = () => {
   const navigate = useNavigate();
-  const { region, disabilityLevel, disabilityType, updateFormData } =
-    useSignupStore();
+  const signupData = useSignupStore((state) => state);
   const [isRegionDropdownOpen, setIsRegionDropdownOpen] = useState(false);
 
   const handleDisabilityTypeChange = (type: string) => {
-    const newTypes = disabilityType.includes(type)
-      ? disabilityType.filter((t) => t !== type)
-      : [...disabilityType, type];
-    updateFormData({ disabilityType: newTypes });
+    const newTypes = signupData.disabilityType.includes(type)
+      ? signupData.disabilityType.filter((t) => t !== type)
+      : [...signupData.disabilityType, type];
+    signupData.updateFormData({ disabilityType: newTypes });
   };
 
-  const handleSubmit = () => {
-    // 데이터는 이미 Chip과 Dropdown을 통해 실시간으로 스토어에 업데이트됨
-    // 여기서는 페이지 이동만 처리
-    navigate("/signup/complete");
+  const handleSubmit = async () => {
+    // 1. 스토어에서 모든 회원가입 데이터를 가져옵니다.
+    const {
+      name,
+      userId,
+      password,
+      birthDate,
+      disabilityLevel,
+      disabilityType,
+      region,
+    } = signupData;
+
+    // 2. API가 요구하는 형식으로 데이터를 변환합니다.
+    // TODO: 백엔드와 협의하여 정확한 regionId 매핑 테이블을 적용해야 합니다.
+    const regionId = KOREAN_REGIONS.indexOf(region);
+
+    // TODO: 백엔드와 협의하여 정확한 disableType 코드 규칙을 적용해야 합니다.
+    // 현재: 장애 유형(disabilityType) 또는 장애 정도(disabilityLevel)가 하나라도 선택된 경우 "A"로 설정
+    const disableType = disabilityType.length > 0 || disabilityLevel ? "A" : "";
+
+    // 3. API 요청 객체를 생성합니다.
+    const signupRequest = {
+      name,
+      loginId: userId,
+      password,
+      birth: birthDate,
+      disableType,
+      regionId,
+    };
+
+    try {
+      // 디버깅을 위해 API 요청 직전에 전송될 데이터를 콘솔에 출력합니다.
+      console.log("회원가입 요청 데이터:", signupRequest);
+
+      // 4. 회원가입 API를 호출합니다.
+      await signup(signupRequest);
+      // 5. 성공 시 완료 페이지로 이동합니다.
+      navigate("/signup/complete");
+    } catch (error) {
+      console.error("회원가입 실패:", error);
+      alert("회원가입 중 오류가 발생했습니다. 다시 시도해주세요.");
+    }
   };
 
   const Chip = ({
@@ -89,7 +127,13 @@ const ExtraPage = () => {
           좀 더 자세한 정보가 필요해요!
         </h2>
 
-        <form onSubmit={handleSubmit} className="space-y-8">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleSubmit();
+          }}
+          className="space-y-8"
+        >
           <div>
             <label className="text-sm font-semibold mb-2 block">
               어느 지역에 살고 계세요?
@@ -100,8 +144,10 @@ const ExtraPage = () => {
                 onClick={() => setIsRegionDropdownOpen((prev) => !prev)}
                 className="w-full p-3 border rounded-md focus:outline-none flex justify-between items-center text-left border-gray-300"
               >
-                <span className={region ? "text-black" : "text-gray-400"}>
-                  {region || "지역을 선택하세요"}
+                <span
+                  className={signupData.region ? "text-black" : "text-gray-400"}
+                >
+                  {signupData.region || "지역을 선택하세요"}
                 </span>
                 <IoIosArrowDown
                   className={`transition-transform ${
@@ -115,7 +161,7 @@ const ExtraPage = () => {
                     <li
                       key={r}
                       onClick={() => {
-                        updateFormData({ region: r });
+                        signupData.updateFormData({ region: r });
                         setIsRegionDropdownOpen(false);
                       }}
                       className="px-4 py-3 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
@@ -143,14 +189,18 @@ const ExtraPage = () => {
                 <div className="flex gap-2">
                   <Chip
                     label="심함"
-                    isSelected={disabilityLevel === "심함"}
-                    onClick={() => updateFormData({ disabilityLevel: "심함" })}
+                    isSelected={signupData.disabilityLevel === "심함"}
+                    onClick={() =>
+                      signupData.updateFormData({ disabilityLevel: "심함" })
+                    }
                   />
                   <Chip
                     label="심하지 않음"
-                    isSelected={disabilityLevel === "심하지 않음"}
+                    isSelected={signupData.disabilityLevel === "심하지 않음"}
                     onClick={() =>
-                      updateFormData({ disabilityLevel: "심하지 않음" })
+                      signupData.updateFormData({
+                        disabilityLevel: "심하지 않음",
+                      })
                     }
                   />
                 </div>
@@ -164,7 +214,7 @@ const ExtraPage = () => {
                     <Chip
                       key={type}
                       label={type}
-                      isSelected={disabilityType.includes(type)}
+                      isSelected={signupData.disabilityType.includes(type)}
                       onClick={() => handleDisabilityTypeChange(type)}
                     />
                   ))}

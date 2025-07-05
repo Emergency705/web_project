@@ -8,6 +8,7 @@ import { useSignupStore } from "../../stores/signup";
 import { IoIosArrowBack } from "react-icons/io";
 
 const profileSchema = z.object({
+  name: z.string().min(1, "이름을 입력해주세요."),
   birthDate: z.string().min(1, "생년월일을 입력해주세요."),
 });
 
@@ -15,7 +16,8 @@ type ProfileFormInputs = z.infer<typeof profileSchema>;
 
 const ProfilePage = () => {
   const navigate = useNavigate();
-  const { birthDate, profileImagePreview, updateFormData } = useSignupStore();
+  const { name, birthDate, profileImagePreview, updateFormData } =
+    useSignupStore();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const {
@@ -26,6 +28,7 @@ const ProfilePage = () => {
     resolver: zodResolver(profileSchema),
     mode: "onChange",
     defaultValues: {
+      name: name,
       birthDate: birthDate,
     },
   });
@@ -49,7 +52,7 @@ const ProfilePage = () => {
   };
 
   const onSubmit: SubmitHandler<ProfileFormInputs> = (data) => {
-    updateFormData({ birthDate: data.birthDate });
+    updateFormData({ name: data.name, birthDate: data.birthDate });
     navigate("/signup/extra");
   };
 
@@ -97,6 +100,19 @@ const ProfilePage = () => {
                 <FaCamera className="text-gray-600" />
               </button>
             </div>
+          </div>
+
+          <div>
+            <label className="font-bold text-gray-700">이름</label>
+            <input
+              type="text"
+              {...register("name")}
+              placeholder="이름을 입력해주세요."
+              className="w-full mt-2 p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#538E79]"
+            />
+            {errors.name && (
+              <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
+            )}
           </div>
 
           <div>
