@@ -1,8 +1,13 @@
-import React from "react";
-import type { Seller } from "../../apis/mock/purchase";
+
+/**
+ * 
+ * 
+ * 
+ * import React from "react";
+import type { Seller } from "../../apis/purchase";
 import { IoClose } from "react-icons/io5";
 
-interface SellerCardProps {
+ * interface SellerCardProps {
   seller: Seller;
   onDelete?: () => void;
 }
@@ -32,3 +37,10 @@ const SellerCard: React.FC<SellerCardProps> = ({ seller, onDelete }) => {
 };
 
 export default SellerCard;
+
+ * 
+ * 
+ * 
+ * 
+ * 
+ */

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import CategoryTopBar from "../components/CategoryTopBar";
 import AnnouncementCard from "../components/AnnouncementCard";
@@ -7,26 +7,32 @@ import CategoryFilterModal from "../components/CategoryFilterModal";
 import { fetchAnnouncements } from "../apis/announcements";
 import dayjs from "dayjs";
 
-// 한글 ↔ 영문 맵핑
+// 지역/대상 맵핑 (as const로 타입 고정)
 const regionMap = {
   전체: undefined,
   서울: "SEOUL", 부산: "BUSAN", 대구: "DAEGU", 인천: "INCHEON",
   광주: "GWANGJU", 대전: "DAEJEON", 울산: "ULSAN", 세종: "SEJONG",
   경기: "GYEONGGI", 강원: "GANGWON", 충북: "CHUNGBUK", 충남: "CHUNGNAM",
   전북: "JEONBUK", 전남: "JEONNAM", 경북: "GYEONGBUK", 경남: "GYEONGNAM", 제주: "JEJU",
-};
-const regionOptions = Object.keys(regionMap);
+} as const;
+const regionOptions = Object.keys(regionMap) as (keyof typeof regionMap)[];
+
 const statusList = ["전체", "분양 중", "분양 마감"];
-const targetMap = { 전체: undefined, 청년: "YOUNG", "1인가구": "ALONE", "65세 이상": "ELDER" };
-const targetOptions = Object.keys(targetMap);
+const targetMap = {
+  전체: undefined,
+  청년: "YOUNG",
+  "1인가구": "ALONE",
+  "65세 이상": "ELDER"
+} as const;
+const targetOptions = Object.keys(targetMap) as (keyof typeof targetMap)[];
 
 const Category1Page = () => {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [status, setStatus] = useState("전체");
-  const [region, setRegion] = useState("전체");
-  const [target, setTarget] = useState("전체");
+  const [region, setRegion] = useState<keyof typeof regionMap>("전체");
+  const [target, setTarget] = useState<keyof typeof targetMap>("전체");
 
   const [list, setList] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
@@ -44,8 +50,8 @@ const Category1Page = () => {
       setLoading(true);
       try {
         const params: any = { type: "HOUSE" };
-        if (regionMap[region]) params.region = regionMap[region];
-        if (targetMap[target]) params.target = targetMap[target];
+        if (region !== "전체") params.region = regionMap[region];
+        if (target !== "전체") params.target = targetMap[target];
         const res = await fetchAnnouncements(params);
         setList(res);
       } catch (e) {
