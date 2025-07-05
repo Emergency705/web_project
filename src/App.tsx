@@ -30,7 +30,6 @@ import Category1Page from "./pages/Category1Page";
 import Category2Page from "./pages/Category2Page";
 import Category3Page from "./pages/Category3Page";
 import Category4Page from "./pages/Category4Page";
-import EditProfile from "./pages/EditProfile";
 import GoodbyePage from "./pages/GoodbyePage";
 import MyFundings from "./pages/MyFundings";
 import WriteReview from "./pages/WriteReview";
@@ -102,12 +101,11 @@ function App() {
             path="/purchase/:id/comment"
             element={<RegisterCommentPage />}
           />
-          <Route path="/edit-profile" element={<EditProfile />} />
+          
           <Route path="/goodbye" element={<GoodbyePage />} />
           <Route path="/my-fundings" element={<MyFundings />} />
           <Route path="/write-review/:id" element={<WriteReview />} />
           <Route path="/saved-posts" element={<SavedPosts />} />
-          <Route path="/edit-funding/:id" element={<EditFunding />} />
           <Route path="/category1" element={<Category1Page />} />
           <Route path="/category2" element={<Category2Page />} />
           <Route path="/category3" element={<Category3Page />} />

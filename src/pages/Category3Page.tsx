@@ -1,49 +1,9 @@
-<<<<<<< HEAD
-import React, { useState, useMemo} from "react";
-=======
 import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
->>>>>>> 28731001ea33955fce6e5fb8dd11f217de58cb71
 import CategoryTopBar from "../components/CategoryTopBar";
 import AnnouncementCard from "../components/AnnouncementCard";
 import CategoryFilterBar from "../components/CategoryFilterBar";
 import CategoryFilterModal from "../components/CategoryFilterModal";
-<<<<<<< HEAD
-const DUMMY = [
-  {
-    id: 1,
-    type: "보수",
-    recruit: true,
-    region: "서울",
-    target: "장애인",
-    deadline: "2025-09-20",
-    url: "https://search.naver.com/search.naver?query=집+시설+보수+지원",
-    title: "서울 장애인 집 시설 보수 지원 접수 중"
-  },
-  {
-    id: 2,
-    type: "보수",
-    recruit: false,
-    region: "경기",
-    target: "1인가구",
-    deadline: "2025-07-18",
-    url: "https://search.naver.com/search.naver?query=집+시설+보수+지원",
-    title: "경기 저소득 1인가구 집 시설 보수 마감"
-  },
-  {
-    id: 3,
-    type: "보수",
-    recruit: true,
-    region: "인천",
-    target: "장애인",
-    deadline: "2025-08-28",
-    url: "https://search.naver.com/search.naver?query=집+시설+보수+지원",
-    title: "인천 장애인 시설 보수 지원 신청 안내"
-  },
-  // ...추가 더미 데이터
-];
-
-=======
 import { fetchAnnouncements } from "../apis/announcements";
 import dayjs from "dayjs";
 
@@ -55,7 +15,6 @@ const regionMap = {
   전북: "JEONBUK", 전남: "JEONNAM", 경북: "GYEONGBUK", 경남: "GYEONGNAM", 제주: "JEJU",
 };
 const regionOptions = Object.keys(regionMap);
->>>>>>> 28731001ea33955fce6e5fb8dd11f217de58cb71
 const statusList = ["전체", "접수 중", "접수 마감"];
 const targetMap = { 전체: undefined, 청년: "YOUNG", "1인가구": "ALONE", "65세 이상": "ELDER" };
 const targetOptions = Object.keys(targetMap);

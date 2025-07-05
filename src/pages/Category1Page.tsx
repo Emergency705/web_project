@@ -1,18 +1,11 @@
-<<<<<<< HEAD
-import React, { useState, useMemo } from "react";
-=======
 import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
->>>>>>> 28731001ea33955fce6e5fb8dd11f217de58cb71
 import CategoryTopBar from "../components/CategoryTopBar";
 import AnnouncementCard from "../components/AnnouncementCard";
 import CategoryFilterBar from "../components/CategoryFilterBar";
 import CategoryFilterModal from "../components/CategoryFilterModal";
-<<<<<<< HEAD
-=======
 import { fetchAnnouncements } from "../apis/announcements";
 import dayjs from "dayjs";
->>>>>>> 28731001ea33955fce6e5fb8dd11f217de58cb71
 
 // 한글 ↔ 영문 맵핑
 const regionMap = {
