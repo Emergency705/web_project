@@ -7,6 +7,9 @@ import MyPage from "./pages/MyPage";
 import CounselPage from "./pages/CounselPage";
 import BottomNavBar from "./components/BottomNavBar";
 
+import EditProfile from "./pages/EditProfile"; // 추가
+import GoodbyePage from "./pages/GoodbyePage"; // 추가 (탈퇴 후 이동)
+
 function App() {
   return (
     <BrowserRouter>
@@ -18,6 +21,8 @@ function App() {
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/mypage" element={<MyPage />} />
           <Route path="/counsel" element={<CounselPage />} />
+          <Route path="/edit-profile" element={<EditProfile />} /> {/* 추가 */}
+          <Route path="/goodbye" element={<GoodbyePage />} /> {/* 추가 */}
         </Routes>
         <BottomNavBar />
       </div>
