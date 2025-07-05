@@ -5,37 +5,49 @@ import { useSignupStore } from "../../stores/signup";
 import { signup } from "../../apis/auth";
 import type { SignupRequest } from "../../apis/auth";
 
-const DISABILITY_TYPES = [
-  "지체장애",
-  "청각장애",
-  "시각장애",
-  "뇌병변장애",
-  "언어장애",
-  "안면장애",
-  "지적장애",
-  "자폐성장애",
-  "정신장애",
-];
+const REGION_MAP = {
+  SEOUL: "서울특별시",
+  BUSAN: "부산광역시",
+  DAEGU: "대구광역시",
+  INCHEON: "인천광역시",
+  GWANGJU: "광주광역시",
+  DAEJEON: "대전광역시",
+  ULSAN: "울산광역시",
+  SEJONG: "세종특별자치시",
+  GYEONGGI: "경기도",
+  GANGWON: "강원도",
+  CHUNGBUK: "충청북도",
+  CHUNGNAM: "충청남도",
+  JEONBUK: "전라북도",
+  JEONNAM: "전라남도",
+  GYEONGBUK: "경상북도",
+  GYEONGNAM: "경상남도",
+  JEJU: "제주특별자치도",
+  SUWON: "수원시",
+  CHEONGJU: "청주시",
+};
 
-const KOREAN_REGIONS = [
-  "서울특별시",
-  "부산광역시",
-  "대구광역시",
-  "인천광역시",
-  "광주광역시",
-  "대전광역시",
-  "울산광역시",
-  "세종특별자치시",
-  "경기도",
-  "강원도",
-  "충청북도",
-  "충청남도",
-  "전라북도",
-  "전라남도",
-  "경상북도",
-  "경상남도",
-  "제주특별자치도",
-];
+const DISABILITY_MAP = {
+  DISABLED: "장애인입니다",
+  NON_DISABLED: "비장애인입니다",
+};
+
+const DISABILITY_TYPE_MAP = {
+  PHYSICAL: "지체장애",
+  HEARING: "청각장애",
+  VISUAL: "시각장애",
+  BRAIN_LESION: "뇌병변장애",
+  SPEECH: "언어장애",
+  FACIAL: "안면장애",
+  INTELLECTUAL: "지적장애",
+  AUTISM: "자폐성장애",
+  MENTAL: "정신장애",
+};
+
+const DISABILITY_LEVEL_MAP = {
+  SEVERE: "심함",
+  MILD: "심하지 않음",
+};
 
 const ExtraPage = () => {
   const navigate = useNavigate();
@@ -44,16 +56,6 @@ const ExtraPage = () => {
 
   const [isRegionDropdownOpen, setIsRegionDropdownOpen] = useState(false);
 
-  const handleDisabilityTypeChange = (type: string) => {
-    const typeIndex = DISABILITY_TYPES.indexOf(type);
-    if (typeIndex === -1) return;
-
-    const newTypes = signupData.disabilityTypes.includes(typeIndex)
-      ? signupData.disabilityTypes.filter((t) => t !== typeIndex)
-      : [...signupData.disabilityTypes, typeIndex];
-    updateFormData({ disabilityTypes: newTypes });
-  };
-
   const handleSubmit = async () => {
     const {
       name,
@@ -61,25 +63,26 @@ const ExtraPage = () => {
       password,
       birthDate,
       region,
-      isDisabled,
+      disable,
       disabilityLevel,
-      disabilityTypes,
+      disabilityType,
+      profileImage,
     } = signupData;
 
-    // 비장애인 선택 시, 장애 관련 데이터는 null 또는 빈 배열로 설정
-    const finalDisabilityLevel = isDisabled ? disabilityLevel : null;
-    const finalDisabilityTypes = isDisabled ? disabilityTypes : [];
-
-    const regionId = KOREAN_REGIONS.indexOf(region);
+    const finalDisabilityLevel =
+      disable === "DISABLED" ? disabilityLevel : null;
+    const finalDisabilityType = disable === "DISABLED" ? disabilityType : null;
 
     const signupRequest: SignupRequest = {
       name,
       loginId: userId,
       password,
       birth: birthDate,
-      regionId: regionId !== -1 ? regionId : 0, // 기본값(서울)
-      disabilityLevel: finalDisabilityLevel,
-      disabilityTypes: finalDisabilityTypes,
+      region,
+      disable,
+      hardness: finalDisabilityLevel,
+      disableType: finalDisabilityType,
+      profileImage,
     };
 
     console.log("회원가입 요청 데이터:", signupRequest);
@@ -143,7 +146,9 @@ const ExtraPage = () => {
                 <span
                   className={signupData.region ? "text-black" : "text-gray-400"}
                 >
-                  {signupData.region || "지역을 선택하세요"}
+                  {signupData.region
+                    ? REGION_MAP[signupData.region as keyof typeof REGION_MAP]
+                    : "지역을 선택하세요"}
                 </span>
                 <IoIosArrowDown
                   className={`transition-transform ${
@@ -153,16 +158,16 @@ const ExtraPage = () => {
               </button>
               {isRegionDropdownOpen && (
                 <ul className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-y-auto">
-                  {KOREAN_REGIONS.map((r) => (
+                  {Object.entries(REGION_MAP).map(([key, value]) => (
                     <li
-                      key={r}
+                      key={key}
                       onClick={() => {
-                        updateFormData({ region: r });
+                        updateFormData({ region: key });
                         setIsRegionDropdownOpen(false);
                       }}
                       className="px-4 py-3 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
                     >
-                      {r}
+                      {value}
                     </li>
                   ))}
                 </ul>
@@ -175,52 +180,55 @@ const ExtraPage = () => {
               장애 여부를 선택해주세요.
             </label>
             <div className="flex gap-2">
-              <Chip
-                label="장애인입니다"
-                isSelected={signupData.isDisabled === true}
-                onClick={() => updateFormData({ isDisabled: true })}
-              />
-              <Chip
-                label="비장애인입니다"
-                isSelected={signupData.isDisabled === false}
-                onClick={() => updateFormData({ isDisabled: false })}
-              />
+              {Object.entries(DISABILITY_MAP).map(([key, value]) => (
+                <Chip
+                  key={key}
+                  label={value}
+                  isSelected={signupData.disable === key}
+                  onClick={() => {
+                    if (key === "NON_DISABLED") {
+                      updateFormData({
+                        disable: key,
+                        disabilityLevel: null,
+                        disabilityType: null,
+                      });
+                    } else {
+                      updateFormData({ disable: key });
+                    }
+                  }}
+                />
+              ))}
             </div>
           </div>
 
-          {/* 장애인입니다'를 선택했을 때만 보이는 섹션 */}
-          {signupData.isDisabled === true && (
+          {signupData.disable === "DISABLED" && (
             <>
               <div>
                 <p className="text-sm font-medium mb-2 text-gray-800">
                   장애 정도
                 </p>
                 <div className="flex gap-2">
-                  <Chip
-                    label="심함"
-                    isSelected={signupData.disabilityLevel === 1}
-                    onClick={() => updateFormData({ disabilityLevel: 1 })}
-                  />
-                  <Chip
-                    label="심하지 않음"
-                    isSelected={signupData.disabilityLevel === 0}
-                    onClick={() => updateFormData({ disabilityLevel: 0 })}
-                  />
+                  {Object.entries(DISABILITY_LEVEL_MAP).map(([key, value]) => (
+                    <Chip
+                      key={key}
+                      label={value}
+                      isSelected={signupData.disabilityLevel === key}
+                      onClick={() => updateFormData({ disabilityLevel: key })}
+                    />
+                  ))}
                 </div>
               </div>
               <div>
                 <p className="text-sm font-medium mb-2 text-gray-800">
-                  장애 유형 (중복 선택 가능)
+                  장애 유형
                 </p>
                 <div className="flex flex-wrap gap-2">
-                  {DISABILITY_TYPES.map((type) => (
+                  {Object.entries(DISABILITY_TYPE_MAP).map(([key, value]) => (
                     <Chip
-                      key={type}
-                      label={type}
-                      isSelected={signupData.disabilityTypes.includes(
-                        DISABILITY_TYPES.indexOf(type)
-                      )}
-                      onClick={() => handleDisabilityTypeChange(type)}
+                      key={key}
+                      label={value}
+                      isSelected={signupData.disabilityType === key}
+                      onClick={() => updateFormData({ disabilityType: key })}
                     />
                   ))}
                 </div>
@@ -233,9 +241,9 @@ const ExtraPage = () => {
       <div className="mt-8">
         <button
           onClick={handleSubmit}
-          disabled={signupData.isDisabled === null} // 장애 여부를 선택해야 활성화
+          disabled={!signupData.disable || !signupData.region}
           className={`w-full text-white py-3 rounded-md transition-colors ${
-            signupData.isDisabled !== null
+            signupData.disable && signupData.region
               ? "bg-[#538E79] hover:bg-opacity-90"
               : "bg-gray-300 cursor-not-allowed"
           }`}
