@@ -132,9 +132,9 @@ const Category1Page = () => {
           status={status}
           setStatus={setStatus}
           region={region}
-          setRegion={setRegion}
+          setRegion={(v: string) => setRegion(v as typeof region)} 
           target={target}
-          setTarget={setTarget}
+          setTarget={v => setTarget(v as typeof target)}
           statusList={statusList}
           regionList={regionOptions}
           targetList={targetOptions}
