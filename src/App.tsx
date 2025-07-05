@@ -36,6 +36,7 @@ import MyFundings from "./pages/MyFundings";
 import WriteReview from "./pages/WriteReview";
 import SavedPosts from "./pages/SavedPosts";
 
+<<<<<<< HEAD
 // 인증된 사용자를 위한 레이아웃 (조건부 BottomNavBar)
 const ProtectedLayout = () => {
   const location = useLocation();
@@ -68,6 +69,41 @@ const PublicLayout = () => (
     <Outlet />
   </div>
 );
+||||||| parent of 9398059 (feat: ProtectedLayout 추가 및 BottomNavBar 조건부 렌더링 구현 - 구매 상세 페이지에서 네비게이션 바 숨김 처리)
+// 인증된 사용자를 위한 공통 레이아웃
+const MainLayout = () => (
+  <div style={{ paddingBottom: 60, minHeight: "100vh", background: "#fafafa" }}>
+    <Outlet />
+    <BottomNavBar />
+  </div>
+);
+=======
+// 인증된 사용자를 위한 레이아웃 (조건부 BottomNavBar)
+const ProtectedLayout = () => {
+  const location = useLocation();
+  const hideNavBarPaths = [
+    /^\/purchase\/\d+$/, // 구매 상세 페이지
+    /^\/purchase\/\d+\/comment$/, // 댓글 작성 페이지
+  ];
+
+  const shouldHideNavBar = hideNavBarPaths.some((path) =>
+    path.test(location.pathname)
+  );
+
+  return (
+    <div
+      style={{
+        paddingBottom: shouldHideNavBar ? 0 : 60,
+        minHeight: "100vh",
+        background: "#ffffff",
+      }}
+    >
+      <Outlet />
+      {!shouldHideNavBar && <BottomNavBar />}
+    </div>
+  );
+};
+>>>>>>> 9398059 (feat: ProtectedLayout 추가 및 BottomNavBar 조건부 렌더링 구현 - 구매 상세 페이지에서 네비게이션 바 숨김 처리)
 
 function App() {
   return (
@@ -84,7 +120,13 @@ function App() {
           <Route path="/signup/complete" element={<CompletePage />} />
         </Route>
 
+<<<<<<< HEAD
         {/* 인증이 필요한 페이지 */}
+||||||| parent of 9398059 (feat: ProtectedLayout 추가 및 BottomNavBar 조건부 렌더링 구현 - 구매 상세 페이지에서 네비게이션 바 숨김 처리)
+        {/* 인증이 필요한 페이지 (공통 레이아웃 + ProtectedRoute 적용) */}
+=======
+        {/* 인증이 필요한 페이지 (ProtectedLayout + ProtectedRoute 적용) */}
+>>>>>>> 9398059 (feat: ProtectedLayout 추가 및 BottomNavBar 조건부 렌더링 구현 - 구매 상세 페이지에서 네비게이션 바 숨김 처리)
         <Route
           element={
             <ProtectedRoute>
@@ -94,7 +136,7 @@ function App() {
         >
           <Route path="/home" element={<HomePage />} />
           <Route path="/mypage" element={<MyPage />} />
-          <Route path="/counsel" element={<CounselPage />} />
+          <Route path="/counsel" unreadCount={10} element={<CounselPage />} />
           <Route path="/purchase" element={<PurchaseListPage />} />
           <Route path="/purchase/:id" element={<PurchaseDetailPage />} />
           <Route
@@ -106,6 +148,13 @@ function App() {
           <Route path="/my-fundings" element={<MyFundings />} />
           <Route path="/write-review/:id" element={<WriteReview />} />
           <Route path="/saved-posts" element={<SavedPosts />} />
+<<<<<<< HEAD
+||||||| parent of 9398059 (feat: ProtectedLayout 추가 및 BottomNavBar 조건부 렌더링 구현 - 구매 상세 페이지에서 네비게이션 바 숨김 처리)
+
+          {/* 카테고리별 페이지 라우트 */}
+=======
+          {/* 카테고리별 페이지 라우트 */}
+>>>>>>> 9398059 (feat: ProtectedLayout 추가 및 BottomNavBar 조건부 렌더링 구현 - 구매 상세 페이지에서 네비게이션 바 숨김 처리)
           <Route path="/category1" element={<Category1Page />} />
           <Route path="/category2" element={<Category2Page />} />
           <Route path="/category3" element={<Category3Page />} />
