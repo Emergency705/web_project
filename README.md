@@ -1,69 +1,56 @@
-# React + TypeScript + Vite
+## 🛠️ 기술 스택 (Tech Stack)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+- **Framework**: React
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **Build Tool**: Vite
+- **Package Manager**: pnpm
 
-Currently, two official plugins are available:
+### 🌐 Git-flow 전략 (Git-flow Strategy)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **`main`**: 최종적으로 사용자에게 배포되는 가장 안정적인 버전 브랜치
+- **`develop`**: 다음 출시 버전을 개발하는 중심 브랜치. 기능 개발 완료 후 `feature` 브랜치들이 병합
+- **`feature`**: 기능 개발용 브랜치. `develop`에서 분기하여 작업
 
-## Expanding the ESLint configuration
+### 📌 브랜치 규칙 및 네이밍 (Branch Rules & Naming)
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+1. 모든 기능 개발은 **feature** 브랜치에서 시작
+2. 작업 시작 전, 항상 최신 `develop` 내용 받아오기 (`git pull origin develop`)
+3. 작업 완료 후, `develop`으로 Pull Request(PR) 생성
+4. PR에 Reviewer(멘션) 지정 이후 머지
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+**브랜치 이름 형식:**  
+feature/이슈번호-기능명
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+- 예시: `feature/1-login`
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+### 🎯 커밋 컨벤션 (Commit Convention)
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+- **주의 사항:**
+- `type`은 소문자만 사용 (feat, fix, refactor, docs, style, test, chore)
+- `subject`는 **모두 현재형 동사**
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+#### 📋 타입 목록
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+| type                | 설명                                  |
+| :------------------ | :------------------------------------ |
+| `start`             | 새로운 프로젝트를 시작할 때           |
+| `feat`              | 새로운 기능을 추가할 때               |
+| `fix`               | 버그를 수정할 때                      |
+| `design`            | CSS 등 사용자 UI 디자인을 변경할 때   |
+| `refactor`          | 기능 변경 없이 코드를 리팩토링할 때   |
+| `settings`          | 설정 파일을 변경할 때                 |
+| `comment`           | 필요한 주석을 추가하거나 변경할 때    |
+| `dependency/Plugin` | 의존성/플러그인을 추가할 때           |
+| `docs`              | README.md 등 문서를 수정할 때         |
+| `merge`             | 브랜치를 병합할 때                    |
+| `deploy`            | 빌드 및 배포 관련 작업을 할 때        |
+| `rename`            | 파일 혹은 폴더명을 수정하거나 옮길 때 |
+| `remove`            | 파일을 삭제하는 작업만 수행했을 때    |
+| `revert`            | 이전 버전으로 롤백할 때               |
+
+```bash
+#### ✨ 예시
+feat: 컴포넌트 추가
+fix: 가려짐 현상 해결
 ```
