@@ -11,8 +11,10 @@ interface SignupFormData {
 
   // AccountPage (비밀번호는 저장하지 않음)
   userId: string;
+  password: string;
 
   // ProfilePage
+  name: string;
   profileImage: File | null;
   profileImagePreview: string | null;
   birthDate: string;
@@ -35,6 +37,8 @@ const initialState: SignupFormData = {
   marketing: false,
   push: false,
   userId: "",
+  password: "",
+  name: "",
   profileImage: null,
   profileImagePreview: null,
   birthDate: "",
