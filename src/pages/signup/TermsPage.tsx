@@ -1,36 +1,32 @@
-import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { IoCheckmark } from "react-icons/io5";
+import { useSignupStore } from "../../stores/signup";
 
 const TermsPage = () => {
   const navigate = useNavigate();
-  const [agreements, setAgreements] = useState({
-    all: false,
-    termsOfService: false,
-    privacyPolicy: false,
-    age: false,
-    marketing: false,
-    push: false,
-  });
+  const {
+    termsOfService,
+    privacyPolicy,
+    age,
+    marketing,
+    push,
+    updateFormData,
+  } = useSignupStore();
+  const allAgreements = useSignupStore((state) => ({
+    termsOfService: state.termsOfService,
+    privacyPolicy: state.privacyPolicy,
+    age: state.age,
+    marketing: state.marketing,
+    push: state.push,
+  }));
+  const isAllChecked = Object.values(allAgreements).every(Boolean);
 
-  const { all, termsOfService, privacyPolicy, age, marketing, push } =
-    agreements;
   const requiredAgreed = termsOfService && privacyPolicy && age;
 
-  useEffect(() => {
-    // 모든 개별 동의 항목(선택 포함)이 변경될 때 '전체 동의' 상태를 업데이트
-    const allIndividualAgreed =
-      termsOfService && privacyPolicy && age && marketing && push;
-    if (all !== allIndividualAgreed) {
-      setAgreements((prev) => ({ ...prev, all: allIndividualAgreed }));
-    }
-  }, [termsOfService, privacyPolicy, age, marketing, push, all]);
-
-  const handleCheckboxChange = (name: keyof typeof agreements) => {
+  const handleCheckboxChange = (name: keyof typeof allAgreements | "all") => {
     if (name === "all") {
-      const newValue = !all;
-      setAgreements({
-        all: newValue,
+      const newValue = !isAllChecked;
+      updateFormData({
         termsOfService: newValue,
         privacyPolicy: newValue,
         age: newValue,
@@ -38,10 +34,7 @@ const TermsPage = () => {
         push: newValue,
       });
     } else {
-      setAgreements((prev) => ({
-        ...prev,
-        [name]: !prev[name],
-      }));
+      updateFormData({ [name]: !allAgreements[name] });
     }
   };
 
@@ -52,7 +45,7 @@ const TermsPage = () => {
     isRequired,
     hasView = false,
   }: {
-    id: keyof typeof agreements;
+    id: keyof typeof allAgreements;
     checked: boolean;
     label: string;
     isRequired: boolean;
@@ -68,7 +61,7 @@ const TermsPage = () => {
         >
           {checked && <IoCheckmark className="text-[#538E79]" />}
         </button>
-        <label htmlFor={id} className="text-gray-800">
+        <label className="text-gray-800">
           <span className={isRequired ? "font-bold" : ""}>{`[${
             isRequired ? "필수" : "선택"
           }]`}</span>{" "}
@@ -96,12 +89,14 @@ const TermsPage = () => {
           <button
             onClick={() => handleCheckboxChange("all")}
             className={`w-6 h-6 rounded-md flex items-center justify-center mr-4 transition-colors ${
-              all ? "bg-[#D9E4E0]" : "bg-gray-200"
+              isAllChecked ? "bg-[#D9E4E0]" : "bg-gray-200"
             }`}
           >
-            {all && <IoCheckmark size={20} className="text-[#538E79]" />}
+            {isAllChecked && (
+              <IoCheckmark size={20} className="text-[#538E79]" />
+            )}
           </button>
-          <label htmlFor="all" className="text-lg font-bold text-gray-900">
+          <label className="text-lg font-bold text-gray-900">
             전체 약관에 동의합니다
           </label>
         </div>
@@ -142,12 +137,12 @@ const TermsPage = () => {
           />
         </div>
 
-        <div className="mt-8 p-4 bg-gray-100 rounded-lg text-xs text-gray-600 space-y-2">
-          <p>안전한 커피챗을 위한 조치</p>
-          <ul className="list-disc list-inside">
-            <li>실명과 학교 인증이 완료된 사용자만 이용 가능</li>
-            <li>부적절한 행동 시 서비스 이용이 제한될 수 있음</li>
-            <li>개인정보 보호를 위해 연락처는 자동으로 공유되지 않음</li>
+        <div className="mt-6 p-4 bg-gray-50 rounded-lg text-sm text-gray-600">
+          <ul className="list-disc list-inside space-y-2">
+            <li>안전한 커뮤니티를 위한 조치</li>
+            <li>실명 및 학교 인증이 완료된 사용자만 이용 가능</li>
+            <li>부적절한 활동은 계정 제한 및 법적 조치를 받을 수 있음</li>
+            <li>개인정보 보호를 위해 연락처 교환은 서비스 내 기능을 이용</li>
           </ul>
         </div>
       </div>

@@ -1,37 +1,47 @@
 import { useNavigate } from "react-router-dom";
-import { useForm } from "react-hook-form";
+import { type SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+import * as z from "zod";
 import { IoIosArrowBack } from "react-icons/io";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { useState } from "react";
+import { useSignupStore } from "../../stores/signup";
 
-const schema = z
+const accountSchema = z
   .object({
     userId: z.string().min(1, "아이디를 입력해주세요."),
-    password: z
-      .string()
-      .min(8, "영문/숫자/특수기호 조합 8자 이상 입력해주세요."),
-    confirmPassword: z.string(),
+    password: z.string().min(8, "영문/숫자/특수기호 조합 8자 이상"),
+    confirmPassword: z.string().min(8, "비밀번호를 다시 입력해주세요."),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "비밀번호가 일치하지 않습니다.",
-    path: ["confirmPassword"], // 에러 메시지를 표시할 필드
+    path: ["confirmPassword"],
   });
 
-type FormData = z.infer<typeof schema>;
+type AccountFormInputs = z.infer<typeof accountSchema>;
 
 const AccountPage = () => {
   const navigate = useNavigate();
+  const { userId, updateFormData } = useSignupStore();
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   const {
     register,
     handleSubmit,
     formState: { errors, isValid },
-  } = useForm<FormData>({
-    resolver: zodResolver(schema),
-    mode: "onChange", // 입력값이 변경될 때마다 유효성 검사
+  } = useForm<AccountFormInputs>({
+    resolver: zodResolver(accountSchema),
+    mode: "onChange",
+    defaultValues: {
+      userId: userId,
+      password: "",
+      confirmPassword: "",
+    },
   });
 
-  const onSubmit = (data: FormData) => {
-    console.log(data);
+  const onSubmit: SubmitHandler<AccountFormInputs> = (data) => {
+    updateFormData({ userId: data.userId });
     navigate("/signup/profile");
   };
 
@@ -66,7 +76,7 @@ const AccountPage = () => {
               />
               <button
                 type="button"
-                className="absolute inset-y-1 right-1 bg-[#538E79] text-white text-xs px-3 rounded-md"
+                className="absolute top-1/2 transform -translate-y-1/2 right-2 bg-[#EAF0ED] text-[#538E79] text-xs px-3 py-1.5 rounded-md font-semibold"
               >
                 중복체크
               </button>
@@ -80,16 +90,25 @@ const AccountPage = () => {
 
           <div>
             <label className="text-sm font-semibold mb-2 block">비밀번호</label>
-            <input
-              type="password"
-              {...register("password")}
-              placeholder="영문/숫자/특수기호 조합 8자 이상"
-              className={`w-full p-3 border rounded-md focus:outline-none ${
-                errors.password
-                  ? "border-red-500 focus:ring-red-500"
-                  : "border-gray-300 focus:ring-2 focus:ring-[#538E79]"
-              }`}
-            />
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                {...register("password")}
+                placeholder="영문/숫자/특수기호 조합 8자 이상"
+                className={`w-full p-3 border rounded-md focus:outline-none ${
+                  errors.password
+                    ? "border-red-500 focus:ring-red-500"
+                    : "border-gray-300 focus:ring-2 focus:ring-[#538E79]"
+                }`}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute top-1/2 transform -translate-y-1/2 right-3 text-gray-500"
+              >
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </button>
+            </div>
             {errors.password && (
               <p className="text-red-500 text-xs mt-1">
                 {errors.password.message}
@@ -101,16 +120,25 @@ const AccountPage = () => {
             <label className="text-sm font-semibold mb-2 block">
               비밀번호 재입력
             </label>
-            <input
-              type="password"
-              {...register("confirmPassword")}
-              placeholder="비밀번호를 다시 입력해주세요."
-              className={`w-full p-3 border rounded-md focus:outline-none ${
-                errors.confirmPassword
-                  ? "border-red-500 focus:ring-red-500"
-                  : "border-gray-300 focus:ring-2 focus:ring-[#538E79]"
-              }`}
-            />
+            <div className="relative">
+              <input
+                type={showConfirmPassword ? "text" : "password"}
+                {...register("confirmPassword")}
+                placeholder="비밀번호를 다시 입력해주세요."
+                className={`w-full p-3 border rounded-md focus:outline-none ${
+                  errors.confirmPassword
+                    ? "border-red-500 focus:ring-red-500"
+                    : "border-gray-300 focus:ring-2 focus:ring-[#538E79]"
+                }`}
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                className="absolute top-1/2 transform -translate-y-1/2 right-3 text-gray-500"
+              >
+                {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+              </button>
+            </div>
             {errors.confirmPassword && (
               <p className="text-red-500 text-xs mt-1">
                 {errors.confirmPassword.message}
