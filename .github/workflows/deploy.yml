@@ -2,7 +2,8 @@ name: Deploy to EC2
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
 
 jobs:
   deploy:
@@ -19,7 +20,7 @@ jobs:
 
       - name: Deploy to EC2
         run: |
-          ssh -o StrictHostKeyChecking=no ec2-user@13.211.130.18 "
+          ssh -o StrictHostKeyChecking=no ec2-user@3.106.237.109 "
             cd ~/web_project &&
             git pull origin main &&
             pnpm install &&
