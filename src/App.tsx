@@ -35,6 +35,7 @@ import GoodbyePage from "./pages/GoodbyePage";
 import MyFundings from "./pages/MyFundings";
 import WriteReview from "./pages/WriteReview";
 import SavedPosts from "./pages/SavedPosts";
+import AnnouncementDetailPage from "./pages/AnnouncementDetailPage";
 
 // 인증된 사용자를 위한 레이아웃 (조건부 BottomNavBar)
 const ProtectedLayout = () => {
@@ -110,6 +111,7 @@ function App() {
           <Route path="/category2" element={<Category2Page />} />
           <Route path="/category3" element={<Category3Page />} />
           <Route path="/category4" element={<Category4Page />} />
+          <Route path="/announcements/:id" element={<AnnouncementDetailPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

@@ -1,12 +1,11 @@
 import api from "./index";
 
-// API에서 내려주는 Announcement 타입
 export interface Announcement {
   id: number;
-  infoType: string;   // 공고 유형
+  infoType: string;
   region: string;
   target: string;
-  remainPeriod: number;  // 남은 기간
+  remainPeriod: number;
   title: string;
   institute: string;
   openDate: string;
@@ -19,18 +18,15 @@ interface AnnouncementsResponse {
   result: Announcement[];
 }
 
-/**
- * 공고 리스트 조회 API
- * @param params: type(필수), isRecruiting, region, target
- */
-export const fetchAnnouncements = async (params: {
-  type: string; // 예: "HOUSE"
+// 공고 리스트 가져오기 (type: 필수)
+export async function fetchAnnouncements(params: {
+  type: string; // HOUSE, LOAN, REPAIRMENT, COMFORTS 등
   isRecruiting?: boolean;
   region?: string;
   target?: string;
-}) => {
+}) {
   const { data } = await api.get<AnnouncementsResponse>("/announcements/", {
     params,
   });
   return data.result;
-};
+}

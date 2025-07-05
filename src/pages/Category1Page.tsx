@@ -1,38 +1,27 @@
-import React, { useState, useEffect, useMemo, useRef } from "react";
+import React, { useState, useEffect, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import CategoryTopBar from "../components/CategoryTopBar";
 import AnnouncementCard from "../components/AnnouncementCard";
 import CategoryFilterBar from "../components/CategoryFilterBar";
 import CategoryFilterModal from "../components/CategoryFilterModal";
 import { fetchAnnouncements } from "../apis/announcements";
+import dayjs from "dayjs";
 
-// 한글 ↔ 영문 매핑
+// 한글 ↔ 영문 맵핑
 const regionMap = {
   전체: undefined,
-  서울: "SEOUL",
-  부산: "BUSAN",
-  대구: "DAEGU",
-  인천: "INCHEON",
-  광주: "GWANGJU",
-  대전: "DAEJEON",
-  울산: "ULSAN",
-  세종: "SEJONG",
-  경기: "GYEONGGI",
-  강원: "GANGWON",
-  충북: "CHUNGBUK",
-  충남: "CHUNGNAM",
-  전북: "JEONBUK",
-  전남: "JEONNAM",
-  경북: "GYEONGBUK",
-  경남: "GYEONGNAM",
-  제주: "JEJU",
+  서울: "SEOUL", 부산: "BUSAN", 대구: "DAEGU", 인천: "INCHEON",
+  광주: "GWANGJU", 대전: "DAEJEON", 울산: "ULSAN", 세종: "SEJONG",
+  경기: "GYEONGGI", 강원: "GANGWON", 충북: "CHUNGBUK", 충남: "CHUNGNAM",
+  전북: "JEONBUK", 전남: "JEONNAM", 경북: "GYEONGBUK", 경남: "GYEONGNAM", 제주: "JEJU",
 };
-
 const regionOptions = Object.keys(regionMap);
 const statusList = ["전체", "분양 중", "분양 마감"];
 const targetMap = { 전체: undefined, 청년: "YOUNG", "1인가구": "ALONE", "65세 이상": "ELDER" };
 const targetOptions = Object.keys(targetMap);
 
 const Category1Page = () => {
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [status, setStatus] = useState("전체");
@@ -42,7 +31,6 @@ const Category1Page = () => {
   const [list, setList] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
 
-  // 필터 태그
   const filterTags = useMemo(() => {
     const tags = [];
     if (status !== "전체") tags.push(status);
@@ -51,14 +39,11 @@ const Category1Page = () => {
     return tags;
   }, [status, region, target]);
 
-  // API 요청
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
         const params: any = { type: "HOUSE" };
-        if (status === "분양 중") params.isRecruiting = true;
-        if (status === "분양 마감") params.isRecruiting = false;
         if (regionMap[region]) params.region = regionMap[region];
         if (targetMap[target]) params.target = targetMap[target];
         const res = await fetchAnnouncements(params);
@@ -70,14 +55,24 @@ const Category1Page = () => {
       }
     };
     fetchData();
-  }, [status, region, target]);
+  }, [region, target]);
 
-  // 검색 필터링 (API+클라 동시)
   const filtered = useMemo(() => {
-    return list.filter(item =>
-      !search || item.title.includes(search)
-    );
-  }, [list, search]);
+    const today = dayjs().startOf("day");
+    return list.filter(item => {
+      const deadline = dayjs(item.openDate, ["YYYY-MM-DD", "YYYY.MM.DD"]);
+      const diff = deadline.diff(today, "day");
+      let isOpen = diff >= 0;
+
+      let statusMatch = true;
+      if (status === "분양 중") statusMatch = isOpen;
+      if (status === "분양 마감") statusMatch = !isOpen;
+
+      const searchMatch = !search || item.title.includes(search);
+
+      return statusMatch && searchMatch;
+    });
+  }, [list, search, status]);
 
   // 모달 드래그
   const [dragStartY, setDragStartY] = useState<number | null>(null);
@@ -111,12 +106,19 @@ const Category1Page = () => {
           <div className="text-center text-gray-400 mt-10">검색 결과가 없습니다.</div>
         ) : (
           filtered.map(item => (
-            <AnnouncementCard key={item.id} {...item} />
+            <AnnouncementCard
+              key={item.id}
+              id={item.id}
+              title={item.title}
+              region={item.region}
+              target={item.target}
+              openDate={item.openDate}
+              onClick={() => navigate(`/announcements/${item.id}`)}
+            />
           ))
         )}
       </div>
 
-      {/* 필터 모달 */}
       {isFilterOpen && (
         <CategoryFilterModal
           isOpen={isFilterOpen}
