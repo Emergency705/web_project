@@ -1,3 +1,5 @@
+/**
+ * 
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import PriceProgressBar from "../../components/purchase/PriceProgressBar";
@@ -83,10 +85,8 @@ const PurchaseDetailPage = () => {
 
   return (
     <div className="bg-white min-h-screen pb-24">
-      {/* Header */}
       <header className="sticky top-0 bg-white z-10 p-4 flex items-center border-b border-gray-200">
         <button onClick={() => navigate(-1)} className="p-1">
-          {/* 뒤로가기 아이콘, 필요시 추가 */}
         </button>
         <h1 className="text-lg font-bold text-center flex-1">{product.name}</h1>
         <div className="w-8"></div>
@@ -192,3 +192,8 @@ const PurchaseDetailPage = () => {
 };
 
 export default PurchaseDetailPage;
+
+ * 
+ *
+ * 
+ */
