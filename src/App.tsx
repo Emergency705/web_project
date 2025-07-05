@@ -80,6 +80,12 @@ function App() {
           <Route path="/signup/profile" element={<ProfilePage />} />
           <Route path="/signup/extra" element={<ExtraPage />} />
           <Route path="/signup/complete" element={<CompletePage />} />
+          <Route path="/category1" element={<Category1Page />} />
+          <Route path="/category2" element={<Category2Page />} />
+          <Route path="/category3" element={<Category3Page />} />
+          <Route path="/category4" element={<Category4Page />} />
+          <Route path="/counsel" element={<CounselPage />} />
+          <Route path="/announcements/:id" element={<AnnouncementDetailPage />} />
           
         </Route>
 
@@ -102,12 +108,7 @@ function App() {
           <Route path="/edit-funding/:id" element={<EditFunding />} />
 
           {/* 카테고리별 페이지 라우트 */}
-          <Route path="/category1" element={<Category1Page />} />
-          <Route path="/category2" element={<Category2Page />} />
-          <Route path="/category3" element={<Category3Page />} />
-          <Route path="/category4" element={<Category4Page />} />
-          <Route path="/counsel" element={<CounselPage />} />
-          <Route path="/announcements/:id" element={<AnnouncementDetailPage />} />
+          
         </Route>
       </Routes>
     </BrowserRouter>
