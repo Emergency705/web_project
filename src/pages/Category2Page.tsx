@@ -73,8 +73,6 @@ const Category2Page = () => {
   // 모달 드래그
   const [dragStartY, setDragStartY] = useState<number | null>(null);
   const [dragOffset, setDragOffset] = useState<number>(0);
-  const modalRef = useRef<HTMLDivElement | null>(null);
-
   const onTouchStart = (e: React.TouchEvent<HTMLDivElement>) => setDragStartY(e.touches[0].clientY);
   const onTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
     if (dragStartY !== null) {
