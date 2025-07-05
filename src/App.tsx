@@ -36,7 +36,6 @@ import MyFundings from "./pages/MyFundings";
 import WriteReview from "./pages/WriteReview";
 import SavedPosts from "./pages/SavedPosts";
 import AnnouncementDetailPage from "./pages/AnnouncementDetailPage";
-import EditFunding from "./pages/EditFunding";
 
 // 인증된 사용자를 위한 레이아웃 (조건부 BottomNavBar)
 const ProtectedLayout = () => {
