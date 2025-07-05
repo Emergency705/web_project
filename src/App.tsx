@@ -20,6 +20,8 @@ import Category1Page from "./pages/Category1Page";
 import Category2Page from "./pages/Category2Page";
 import Category3Page from "./pages/Category3Page";
 import Category4Page from "./pages/Category4Page";
+import SavedPosts from './pages/SavedPosts';
+
 
 // 인증된 사용자를 위한 공통 레이아웃
 const MainLayout = () => (
@@ -62,6 +64,8 @@ function App() {
           <Route path="/goodbye" element={<GoodbyePage />} />
           <Route path="/my-fundings" element={<MyFundings />} />
           <Route path="/write-review/:id" element={<WriteReview />} />
+          <Route path="/saved-posts" element={<SavedPosts />} />
+
           {/* 카테고리별 페이지 라우트 */}
           <Route path="/category1" element={<Category1Page />} />
           <Route path="/category2" element={<Category2Page />} />
