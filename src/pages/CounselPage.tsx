@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef } from "react";
+import React, { useState, useMemo } from "react";
 import { FiSearch, FiFilter } from "react-icons/fi";
 import CounselCard from "../components/CounselCard";
 import { isOpenNow } from "../utils/isOpenNow";

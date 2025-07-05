@@ -1,7 +1,7 @@
 import React from "react";
 
 interface CategoryCardProps {
-  title: string;
+  title: React.ReactNode;
   emoji: string;
   bgColor: string;
   onClick: () => void;
