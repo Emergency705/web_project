@@ -1,4 +1,3 @@
-import React from "react";
 const Category1Page = () => (
   <div className="p-6">
     <h2 className="font-bold text-xl mb-2">편의시설 설치</h2>
