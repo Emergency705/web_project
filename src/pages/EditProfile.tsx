@@ -1,7 +1,6 @@
-// src/pages/EditProfile.tsx
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import backIcon from '../assets/backButton.svg';
 
 const disabilityTypes = [
   '지체장애', '청각장애', '시각장애', '뇌병변장애',
@@ -49,17 +48,22 @@ const EditProfile = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto p-4 text-sm">
+    <div className="max-w-[400px] mx-auto p-4 bg-white min-h-screen text-sm relative">
       {/* 뒤로가기 */}
-      <button onClick={() => navigate(-1)} className="text-2xl mb-4">{'<'}</button>
+      <button onClick={() => navigate(-1)} className="absolute left-4 top-4">
+        <img src={backIcon} alt="뒤로가기" className="w-6 h-6" />
+      </button>
 
-      {/* 프로필 이미지 */}
-      <div className="flex items-center gap-4 mb-4">
-        <div className="w-20 h-20 rounded-full bg-black overflow-hidden">
-          {profileImage && <img src={profileImage} alt="profile" className="w-full h-full object-cover" />}
+      <div className="flex items-center gap-4 mt-12 mb-6">
+        {/* 프로필 이미지 */}
+        <div className="w-20 h-20 rounded-full bg-black overflow-hidden mb-2 flex items-center justify-center">
+          {profileImage && (
+            <img src={profileImage} alt="profile" className="w-full h-full object-cover" />
+          )}
         </div>
-        <div className="flex flex-col gap-2">
-          <label className="bg-gray-800 text-white px-3 py-1 rounded-md cursor-pointer">
+        {/* 이미지 버튼 */}
+        <div className="flex gap-2">
+          <label className="bg-gray-800 text-white px-4 py-2  cursor-pointer text-xs font-medium text-center">
             앨범에서 선택
             <input
               type="file"
@@ -70,7 +74,7 @@ const EditProfile = () => {
           </label>
           <button
             onClick={() => setProfileImage(null)}
-            className="border px-3 py-1 rounded-md text-gray-500"
+            className="border border-gray-300 px-4 py-2 text-gray-500 text-xs font-medium bg-white-100 text-center"
           >
             기본 이미지
           </button>
@@ -78,20 +82,21 @@ const EditProfile = () => {
       </div>
 
       {/* 이름 */}
-      <label className="block mb-1 font-medium">사용자 이름</label>
+      <label className="block mb-1 font-bold text-base">사용자 이름</label>
       <input
         type="text"
-        className="w-full border rounded-md p-2 mb-4"
+        className="w-full border border-gray-300 p-2 mb-4 bg-white-50 text-base"
         value={name}
         onChange={(e) => setName(e.target.value)}
       />
 
       {/* 지역 */}
-      <label className="block mb-1 font-medium">거주 지역</label>
+      <label className="block mb-1 font-bold text-base">거주 지역</label>
       <select
-        className="w-full border rounded-md p-2 mb-4"
+        className="w-full border border-gray-300  p-2 mb-4 bg-white-50 text-base "
         value={region}
         onChange={(e) => setRegion(e.target.value)}
+        
       >
         <option value="서울">서울</option>
         <option value="부산">부산</option>
@@ -102,27 +107,37 @@ const EditProfile = () => {
       </select>
 
       {/* 생년월일 */}
-      <label className="block mb-1 font-medium">생년월일을 알려주세요!</label>
-      <input
-        type="date"
-        className="w-full border rounded-md p-2 mb-6"
-        value={birth}
-        onChange={(e) => setBirth(e.target.value)}
-      />
+      <label className="block mb-1 font-bold text-base">생년월일을 알려주세요!</label>
+      <div className="relative mb-6">
+        <input
+          type="date"
+          className="w-full border border-gray-300 p-2 bg-white-50 text-base"
+          value={birth}
+          onChange={(e) => setBirth(e.target.value)}
+        />
+        <span className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+          {/* 캘린더 아이콘  */}
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            
+          </svg>
+        </span>
+      </div>
 
       {/* 장애 유형 */}
-      <div className="mb-2 font-medium">본인의 장애 종류를 체크해주세요.</div>
-      <p className="text-gray-500 text-xs mb-2">공식적인 기준을 따라서 체크해주세요!</p>
+      <div className="mb-1 font-bold text-base">본인의 장애 종류를 체크해주세요.</div>
+      <p className="text-gray-500 text-xs mb-1">공식적인 기준을 따라서 체크해주세요!</p>
+      <p className="text-gray-500 text-xs mb-2">장애 유형 (중복 선택 가능)</p>
       <div className="flex flex-wrap gap-2 mb-6">
         {disabilityTypes.map((type) => (
           <button
             key={type}
+            type="button"
             onClick={() => handleTypeToggle(type)}
-            className={`px-3 py-1 rounded-full text-sm border ${
-              selectedTypes.includes(type)
-                ? 'bg-green-200 border-green-500 text-black'
-                : 'bg-white text-gray-600'
-            }`}
+            className={`px-3 py-1 rounded-[10px] text-sm border font-medium
+              ${selectedTypes.includes(type)
+                ? 'bg-[#8DE1D1] border-black-500 text-black-900'
+                : 'bg-white border-gray-300 text-black-600'}
+            `}
           >
             {type}
           </button>
@@ -130,16 +145,18 @@ const EditProfile = () => {
       </div>
 
       {/* 장애 정도 */}
-      <div className="flex gap-2 mb-6">
+      <p className="text-gray-500 text-xs mb-1">장애 경도</p>
+      <div className="flex gap-2 mb-8">
         {disabilityLevels.map((level) => (
           <button
             key={level}
+            type="button"
             onClick={() => setSelectedLevel(level)}
-            className={`px-3 py-1 rounded-full text-sm border ${
-              selectedLevel === level
-                ? 'bg-green-200 border-green-500 text-black'
-                : 'bg-white text-gray-600'
-            }`}
+            className={`px-3 py-1 rounded-[10px] text-sm border font-medium
+              ${selectedLevel === level
+                ? 'bg-[#8DE1D1] border-black-500 text-black-900'
+                : 'bg-white border-gray-300 text-black-600'}
+            `}
           >
             {level}
           </button>
@@ -149,7 +166,7 @@ const EditProfile = () => {
       {/* 저장 버튼 */}
       <button
         onClick={handleSave}
-        className="w-full bg-gray-800 text-white py-2 rounded-md"
+        className="w-full bg-gray-800 text-white py-2 rounded-md text-base font-bold"
       >
         수정사항 저장
       </button>

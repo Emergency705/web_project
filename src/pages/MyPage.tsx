@@ -1,4 +1,3 @@
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const MyPage = () => {
@@ -79,11 +78,3 @@ const MyPage = () => {
 };
 
 export default MyPage;
-
-
-/*
-const MyPage = () => {
-  return <div>마이페이지</div>;
-};
-export default MyPage;
-*/

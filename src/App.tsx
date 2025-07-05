@@ -13,7 +13,8 @@ import BottomNavBar from "./components/BottomNavBar";
 
 import EditProfile from "./pages/EditProfile"; // 추가
 import GoodbyePage from "./pages/GoodbyePage"; // 추가 (탈퇴 후 이동)
-
+import MyFundings from "./pages/MyFundings"; // 추가 (내가 참여한 펀딩 목록)
+import WriteReview from "./pages/WriteReview";
 function App() {
   return (
     <BrowserRouter>
@@ -27,6 +28,8 @@ function App() {
           <Route path="/counsel" element={<CounselPage />} />
           <Route path="/edit-profile" element={<EditProfile />} /> {/* 추가 */}
           <Route path="/goodbye" element={<GoodbyePage />} /> {/* 추가 */}
+          <Route path="/my-fundings" element={<MyFundings />} /> {/* 추가 */}
+          <Route path="/write-review/:id" element={<WriteReview />} /> {/* 추가 */}
           {/* 카테고리별 페이지 라우트 */}
           <Route path="/category1" element={<Category1Page />} />
           <Route path="/category2" element={<Category2Page />} />
