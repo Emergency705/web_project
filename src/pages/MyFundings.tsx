@@ -1,5 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import backIcon from '../assets/backButton.svg';
+import matImg from '../assets/mat.png';
+
 const sampleFundings = [
   {
     id: 1,
@@ -7,7 +9,7 @@ const sampleFundings = [
     price: 12000,
     quantity: 3,
     deadline: '3일 뒤 구매 마감',
-    imageUrl: '/assets/mat.jpg', // 이미지 경로 확인 필요
+    imageUrl: matImg,
   },
   {
     id: 2,
@@ -15,7 +17,7 @@ const sampleFundings = [
     price: 12000,
     quantity: 3,
     deadline: '3일 뒤 구매 마감',
-    imageUrl: '/assets/mat.jpg',
+    imageUrl: matImg,
   },
   {
     id: 3,
@@ -23,7 +25,7 @@ const sampleFundings = [
     price: 12000,
     quantity: 3,
     deadline: '3일 뒤 구매 마감',
-    imageUrl: '/assets/mat.jpg',
+    imageUrl: matImg,
   },
 ];
 
@@ -66,14 +68,14 @@ const MyFundings = () => {
             {/* 버튼 */}
             <div className="flex gap-2 mt-3">
               <button
-                className="flex-1 bg-[#8DE1D1] text-black py-1.5 rounded-md font-semibold"
+                className="flex-1 bg-[#A9CDC1] text-[#0C6345] py-1.5 rounded-md font-semibold"
                 onClick={() => navigate(`/write-review/${item.id}`)}
               >
                 기대평 남기기
               </button>
               <button
                 className="flex-1 bg-[#DDDDDD] text-black py-1.5 rounded-md font-semibold"
-                onClick={() => alert('등록 수정 기능은 준비 중입니다.')}
+                onClick={() => navigate(`/edit-funding/${item.id}`)}
               >
                 내 등록 수정
               </button>

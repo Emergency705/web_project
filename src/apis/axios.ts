@@ -2,10 +2,10 @@
 import axios from "axios";
 import { useAuthStore } from "../stores/auth";
 
-// baseURL 환경변수는 .env에 VITE_API_URL로 지정!
+// baseURL을 /api로 설정하면 vite.config.ts의 프록시 설정에 따라 요청이 전달됩니다.
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL, // 예: "http://3.36.55.255:8080"
-  timeout: 8000,
+  baseURL: "/api",
+  timeout: 15000,
 });
 
 api.interceptors.request.use((config) => {
