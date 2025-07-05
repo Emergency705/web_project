@@ -12,13 +12,8 @@ const TermsPage = () => {
     push,
     updateFormData,
   } = useSignupStore();
-  const allAgreements = useSignupStore((state) => ({
-    termsOfService: state.termsOfService,
-    privacyPolicy: state.privacyPolicy,
-    age: state.age,
-    marketing: state.marketing,
-    push: state.push,
-  }));
+
+  const allAgreements = { termsOfService, privacyPolicy, age, marketing, push };
   const isAllChecked = Object.values(allAgreements).every(Boolean);
 
   const requiredAgreed = termsOfService && privacyPolicy && age;
