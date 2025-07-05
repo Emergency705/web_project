@@ -1,4 +1,3 @@
-import React from "react";
 import CategoryCard from "../components/CategoryCard";
 import HomeTopBar from "../components/HomeTopBar";
 import { useNavigate } from "react-router-dom";
