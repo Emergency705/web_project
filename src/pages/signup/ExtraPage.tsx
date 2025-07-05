@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { IoIosArrowBack, IoIosArrowDown } from "react-icons/io";
 import { useSignupStore } from "../../stores/signup";
 import { signup } from "../../apis/auth";
+import type { SignupRequest } from "../../apis/auth";
 
 const DISABILITY_TYPES = [
   "지적장애",
@@ -11,9 +12,9 @@ const DISABILITY_TYPES = [
   "뇌병변장애",
   "언어장애",
   "안면장애",
+  "지적장애",
   "자폐성장애",
   "정신장애",
-  "제주특별자치도",
 ];
 
 const KOREAN_REGIONS = [
@@ -39,52 +40,52 @@ const KOREAN_REGIONS = [
 const ExtraPage = () => {
   const navigate = useNavigate();
   const signupData = useSignupStore((state) => state);
+  const { updateFormData } = signupData;
+
   const [isRegionDropdownOpen, setIsRegionDropdownOpen] = useState(false);
 
   const handleDisabilityTypeChange = (type: string) => {
-    const newTypes = signupData.disabilityType.includes(type)
-      ? signupData.disabilityType.filter((t) => t !== type)
-      : [...signupData.disabilityType, type];
-    signupData.updateFormData({ disabilityType: newTypes });
+    const typeIndex = DISABILITY_TYPES.indexOf(type);
+    if (typeIndex === -1) return;
+
+    const newTypes = signupData.disabilityTypes.includes(typeIndex)
+      ? signupData.disabilityTypes.filter((t) => t !== typeIndex)
+      : [...signupData.disabilityTypes, typeIndex];
+    updateFormData({ disabilityTypes: newTypes });
   };
 
   const handleSubmit = async () => {
-    // 1. 스토어에서 모든 회원가입 데이터를 가져옵니다.
     const {
       name,
       userId,
       password,
       birthDate,
-      disabilityLevel,
-      disabilityType,
       region,
+      isDisabled,
+      disabilityLevel,
+      disabilityTypes,
     } = signupData;
 
-    // 2. API가 요구하는 형식으로 데이터를 변환합니다.
-    // TODO: 백엔드와 협의하여 정확한 regionId 매핑 테이블을 적용해야 합니다.
+    // 비장애인 선택 시, 장애 관련 데이터는 null 또는 빈 배열로 설정
+    const finalDisabilityLevel = isDisabled ? disabilityLevel : null;
+    const finalDisabilityTypes = isDisabled ? disabilityTypes : [];
+
     const regionId = KOREAN_REGIONS.indexOf(region);
 
-    // TODO: 백엔드와 협의하여 정확한 disableType 코드 규칙을 적용해야 합니다.
-    // 현재: 장애 유형(disabilityType) 또는 장애 정도(disabilityLevel)가 하나라도 선택된 경우 "A"로 설정
-    const disableType = disabilityType.length > 0 || disabilityLevel ? "A" : "";
-
-    // 3. API 요청 객체를 생성합니다.
-    const signupRequest = {
+    const signupRequest: SignupRequest = {
       name,
       loginId: userId,
       password,
       birth: birthDate,
-      disableType,
-      regionId,
+      regionId: regionId !== -1 ? regionId : 0, // 기본값(서울)
+      disabilityLevel: finalDisabilityLevel,
+      disabilityTypes: finalDisabilityTypes,
     };
 
-    try {
-      // 디버깅을 위해 API 요청 직전에 전송될 데이터를 콘솔에 출력합니다.
-      console.log("회원가입 요청 데이터:", signupRequest);
+    console.log("회원가입 요청 데이터:", signupRequest);
 
-      // 4. 회원가입 API를 호출합니다.
+    try {
       await signup(signupRequest);
-      // 5. 성공 시 완료 페이지로 이동합니다.
       navigate("/signup/complete");
     } catch (error) {
       console.error("회원가입 실패:", error);
@@ -102,6 +103,7 @@ const ExtraPage = () => {
     onClick: () => void;
   }) => (
     <button
+      type="button"
       onClick={onClick}
       className={`px-4 py-2 rounded-full border transition-colors ${
         isSelected
@@ -127,13 +129,7 @@ const ExtraPage = () => {
           좀 더 자세한 정보가 필요해요!
         </h2>
 
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            handleSubmit();
-          }}
-          className="space-y-8"
-        >
+        <div className="space-y-8">
           <div>
             <label className="text-sm font-semibold mb-2 block">
               어느 지역에 살고 계세요?
@@ -161,7 +157,7 @@ const ExtraPage = () => {
                     <li
                       key={r}
                       onClick={() => {
-                        signupData.updateFormData({ region: r });
+                        updateFormData({ region: r });
                         setIsRegionDropdownOpen(false);
                       }}
                       className="px-4 py-3 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
@@ -176,12 +172,25 @@ const ExtraPage = () => {
 
           <div>
             <label className="text-sm font-semibold mb-2 block">
-              본인의 장애 종류를 체크해주세요.
+              장애 여부를 선택해주세요.
             </label>
-            <p className="text-xs text-gray-500 mb-2">
-              공식적인 기준을 따라서 체크해주세요!
-            </p>
-            <div className="space-y-4">
+            <div className="flex gap-2">
+              <Chip
+                label="장애인입니다"
+                isSelected={signupData.isDisabled === true}
+                onClick={() => updateFormData({ isDisabled: true })}
+              />
+              <Chip
+                label="비장애인입니다"
+                isSelected={signupData.isDisabled === false}
+                onClick={() => updateFormData({ isDisabled: false })}
+              />
+            </div>
+          </div>
+
+          {/* 장애인입니다'를 선택했을 때만 보이는 섹션 */}
+          {signupData.isDisabled === true && (
+            <>
               <div>
                 <p className="text-sm font-medium mb-2 text-gray-800">
                   장애 정도
@@ -189,19 +198,13 @@ const ExtraPage = () => {
                 <div className="flex gap-2">
                   <Chip
                     label="심함"
-                    isSelected={signupData.disabilityLevel === "심함"}
-                    onClick={() =>
-                      signupData.updateFormData({ disabilityLevel: "심함" })
-                    }
+                    isSelected={signupData.disabilityLevel === 1}
+                    onClick={() => updateFormData({ disabilityLevel: 1 })}
                   />
                   <Chip
                     label="심하지 않음"
-                    isSelected={signupData.disabilityLevel === "심하지 않음"}
-                    onClick={() =>
-                      signupData.updateFormData({
-                        disabilityLevel: "심하지 않음",
-                      })
-                    }
+                    isSelected={signupData.disabilityLevel === 0}
+                    onClick={() => updateFormData({ disabilityLevel: 0 })}
                   />
                 </div>
               </div>
@@ -214,22 +217,28 @@ const ExtraPage = () => {
                     <Chip
                       key={type}
                       label={type}
-                      isSelected={signupData.disabilityType.includes(type)}
+                      isSelected={signupData.disabilityTypes.includes(
+                        DISABILITY_TYPES.indexOf(type)
+                      )}
                       onClick={() => handleDisabilityTypeChange(type)}
                     />
                   ))}
                 </div>
               </div>
-            </div>
-          </div>
-        </form>
+            </>
+          )}
+        </div>
       </div>
 
       <div className="mt-8">
         <button
-          type="submit"
           onClick={handleSubmit}
-          className="w-full text-white py-3 rounded-md bg-[#538E79] hover:bg-opacity-90"
+          disabled={signupData.isDisabled === null} // 장애 여부를 선택해야 활성화
+          className={`w-full text-white py-3 rounded-md transition-colors ${
+            signupData.isDisabled !== null
+              ? "bg-[#538E79] hover:bg-opacity-90"
+              : "bg-gray-300 cursor-not-allowed"
+          }`}
         >
           저장하기
         </button>

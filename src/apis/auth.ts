@@ -26,16 +26,14 @@ interface ApiResponse<T> {
 
 // 회원가입 요청 (POST /users/join)
 export interface SignupRequest {
-  name: string; // TODO: 회원가입 폼에 이름 필드 추가 필요
+  name: string;
   loginId: string;
   password: string;
   birth: string; // "YYYY-MM-DD"
-  // TODO: API 명세 상 disableType은 "A"와 같은 단일 문자열이지만,
-  // 회원가입 폼에서는 '장애 정도'와 '장애 유형'으로 나뉘어 있어 변환 규칙이 필요합니다.
-  disableType: string;
-  // TODO: API 명세 상 regionId는 숫자이지만,
-  // 회원가입 폼에서는 "서울특별시"와 같은 지역 이름으로 되어 있어 ID로 변환이 필요합니다.
   regionId: number;
+  // TODO: 백엔드와 필드 이름 최종 확인 필요
+  disabilityLevel: number | null; // 심함: 1, 심하지 않음: 0, 비장애인: null
+  disabilityTypes: number[]; // 장애 유형 인덱스 배열, 비장애인: []
 }
 
 // 회원가입 응답 결과 (POST /users/join)
