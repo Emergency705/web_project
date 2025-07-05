@@ -24,7 +24,7 @@ import Category4Page from "./pages/Category4Page";
 // 인증된 사용자를 위한 공통 레이아웃
 const MainLayout = () => (
   <div style={{ paddingBottom: 60, minHeight: "100vh", background: "#fafafa" }}>
-    <Outlet /> {/* 자식 페이지들이 이 위치에 렌더링됩니다 */}
+    <Outlet /> 
     <BottomNavBar />
   </div>
 );
@@ -34,7 +34,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         {/* 인증이 필요 없는 페이지 (공통 레이아웃 없음) */}
-        <Route path="/" element={<IntroPage />} />
+        
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup/terms" element={<TermsPage />} />
         <Route path="/signup/account" element={<AccountPage />} />
@@ -50,6 +50,7 @@ function App() {
             </ProtectedRoute>
           }
         >
+          <Route path="" element={<IntroPage />} />
           <Route path="/home" element={<HomePage />} />
           <Route path="/mypage" element={<MyPage />} />
           <Route path="/counsel" element={<CounselPage />} />
