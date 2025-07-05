@@ -17,8 +17,6 @@ import ProfilePage from "./pages/signup/ProfilePage";
 import ExtraPage from "./pages/signup/ExtraPage";
 import CompletePage from "./pages/signup/CompletePage";
 
-// 구매 관련 페이지
-import PurchaseListPage from "./pages/purchase/PurchaseListPage";
 
 // Protected Pages
 import HomePage from "./pages/HomePage";
@@ -95,7 +93,6 @@ function App() {
         >
           <Route path="/home" element={<HomePage />} />
           <Route path="/mypage" element={<MyPage />} />
-          <Route path="/purchasle" element={<PurchaseListPage />} />
           <Route path="/purchase/:id/comment" element={<WriteReview />} />
           <Route path="/edit-profile" element={<EditProfile/>} />
           <Route path="/goodbye" element={<GoodbyePage />} />

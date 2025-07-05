@@ -1,4 +1,6 @@
-import { useState, useEffect } from "react";
+
+/**
+ * import { useState, useEffect } from "react";
 import CategoryFilter from "../../components/purchase/CategoryFilter";
 import ProductCard from "../../components/purchase/ProductCard";
 import { getFundingList, type FundingItem } from "../../apis/purchase";
@@ -39,7 +41,6 @@ const PurchaseListPage = () => {
 
   return (
     <div className="bg-white pb-16">
-      {/* Header */}
       <div className="p-4 sticky top-0 bg-white z-10">
         <div className="relative">
           <input
@@ -68,7 +69,6 @@ const PurchaseListPage = () => {
         </div>
       </div>
 
-      {/* Product Carousel */}
       {carouselProducts.length > 0 && (
         <div className="relative h-44 mx-4 overflow-hidden">
           {carouselProducts.map((product, index) => (
@@ -115,7 +115,6 @@ const PurchaseListPage = () => {
         </div>
       )}
 
-      {/* Category Filter */}
       <div className="px-4 pt-8 pb-6">
         <h2 className="text-lg font-bold mb-4">
           어느 장소에 제품이 필요하세요?
@@ -123,7 +122,6 @@ const PurchaseListPage = () => {
         <CategoryFilter categories={mockCategories} />
       </div>
 
-      {/* Product Grid */}
       <div className="grid grid-cols-2 gap-x-4 gap-y-6 px-4">
         {products.map((product) => (
           <ProductCard
@@ -145,3 +143,5 @@ const PurchaseListPage = () => {
 };
 
 export default PurchaseListPage;
+
+ */
