@@ -22,7 +22,7 @@ type AccountFormInputs = z.infer<typeof accountSchema>;
 
 const AccountPage = () => {
   const navigate = useNavigate();
-  const { userId, updateFormData } = useSignupStore();
+  const { userId, password, updateFormData } = useSignupStore();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -35,13 +35,13 @@ const AccountPage = () => {
     mode: "onChange",
     defaultValues: {
       userId: userId,
-      password: "",
+      password: password,
       confirmPassword: "",
     },
   });
 
   const onSubmit: SubmitHandler<AccountFormInputs> = (data) => {
-    updateFormData({ userId: data.userId });
+    updateFormData({ userId: data.userId, password: data.password });
     navigate("/signup/profile");
   };
 

@@ -1,17 +1,18 @@
+// src/apis/axios.ts
 import axios from "axios";
 import { useAuthStore } from "../stores/auth";
 
+// baseURL 환경변수는 .env에 VITE_API_URL로 지정!
 const api = axios.create({
-  // .env 파일에 VITE_API_URL='http://your-api-server.com' 와 같이 설정해야 합니다.
-  baseURL: import.meta.env.VITE_API_URL,
+  baseURL: import.meta.env.VITE_API_URL, // 예: "http://3.36.55.255:8080"
   timeout: 8000,
 });
 
 api.interceptors.request.use((config) => {
+  // token이 없어도 undefined 처리 (문제 없음)
   const token = useAuthStore.getState().token;
   if (token) {
-    // 백엔드와 협의된 헤더 이름('authentication')을 사용합니다.
-    config.headers.authentication = token;
+    config.headers["Authorization"] = `Bearer ${token}`;
   }
   return config;
 });
@@ -19,8 +20,10 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (res) => res,
   (err) => {
+    // 혹시 로그아웃 함수가 없는 상황(아직 미구현)도 대비
     if (err.response?.status === 401) {
-      useAuthStore.getState().logout();
+      const logout = useAuthStore.getState().logout;
+      if (logout) logout();
       window.location.href = "/login";
     }
     return Promise.reject(err);
