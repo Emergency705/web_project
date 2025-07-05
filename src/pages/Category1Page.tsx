@@ -3,7 +3,6 @@ import CategoryTopBar from "../components/CategoryTopBar";
 import AnnouncementCard from "../components/AnnouncementCard";
 import CategoryFilterBar from "../components/CategoryFilterBar";
 import CategoryFilterModal from "../components/CategoryFilterModal";
-import dayjs from "dayjs";
 
 // 더미데이터 예시 (분양 공고)
 const DUMMY = [

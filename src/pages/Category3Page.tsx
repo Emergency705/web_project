@@ -1,10 +1,8 @@
-import React, { useState, useMemo, useRef } from "react";
+import React, { useState, useMemo} from "react";
 import CategoryTopBar from "../components/CategoryTopBar";
 import AnnouncementCard from "../components/AnnouncementCard";
 import CategoryFilterBar from "../components/CategoryFilterBar";
 import CategoryFilterModal from "../components/CategoryFilterModal";
-import dayjs from "dayjs";
-
 const DUMMY = [
   {
     id: 1,
