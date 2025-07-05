@@ -1,4 +1,7 @@
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { fetchMyInfo } from "../apis/auth";
+import type { UserInfo } from "../apis/auth";
 
 const profileImg =
   "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=facearea&w=128&q=80";
@@ -11,20 +14,51 @@ const fundings = [
 
 const MyPage = () => {
   const navigate = useNavigate();
+  const [user, setUser] = useState<UserInfo | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchMyInfo()
+      .then(setUser)
+      .catch((e) => {
+        alert(e.message || "내 정보를 불러오지 못했습니다.");
+      })
+      .finally(() => setLoading(false));
+  }, []);
+
+  // 나이 계산 함수
+  const getAge = (birth: string) => {
+    if (!birth) return "-";
+    const today = new Date();
+    const birthDate = new Date(birth);
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const m = today.getMonth() - birthDate.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+    return age;
+  };
 
   const handleLogout = () => {
-    // 여기에 실제 로그아웃 처리 (예: localStorage.clear())
-    console.log("로그아웃 처리됨");
+    // 로그아웃 처리
+    // localStorage.clear(); // 필요 시
     navigate("/login");
   };
 
   const handleWithdraw = () => {
     const confirmed = window.confirm("정말 탈퇴하시겠습니까?");
     if (confirmed) {
-      console.log("회원 탈퇴 처리됨");
       navigate("/goodbye");
     }
   };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <span className="text-gray-400">로딩 중...</span>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-md mx-auto min-h-screen bg-white pt-6 pb-4 px-4">
@@ -33,15 +67,20 @@ const MyPage = () => {
 
       {/* 프로필 카드 */}
       <div className="flex items-center mb-6">
-        {/* 프로필 사진 */}
+        {/* 프로필 사진 (실제 이미지 url 나오면 user.profileImage로 교체!) */}
         <img
-          src={profileImg}
+          src={user?.profileImage || profileImg}
           alt="프로필"
           className="w-14 h-14 rounded-full object-cover border mr-3"
         />
         <div className="flex-1">
-          <div className="font-bold text-[19px] leading-tight">김하은</div>
-          <div className="text-[#7B977F] text-[15px]">65세 · 서울 거주</div>
+          <div className="font-bold text-[19px] leading-tight">
+            {user?.name ?? "-"}
+          </div>
+          <div className="text-[#7B977F] text-[15px]">
+            {user?.birth ? `${getAge(user.birth)}세` : "-"}
+            {user?.regionName ? ` · ${user.regionName} 거주` : ""}
+          </div>
         </div>
         <button
           className="bg-[#538E79] text-white text-sm font-medium px-4 py-2 rounded-lg"
