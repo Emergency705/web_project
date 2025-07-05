@@ -108,6 +108,7 @@ function App() {
           <Route path="/my-fundings" element={<MyFundings />} />
           <Route path="/write-review/:id" element={<WriteReview />} />
           <Route path="/saved-posts" element={<SavedPosts />} />
+          <Route path="/edit-funding/:id" element={<EditFunding />} />
           <Route path="/category1" element={<Category1Page />} />
           <Route path="/category2" element={<Category2Page />} />
           <Route path="/category3" element={<Category3Page />} />

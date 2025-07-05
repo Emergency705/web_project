@@ -3,49 +3,65 @@ import { useNavigate, useParams } from "react-router-dom";
 import PriceProgressBar from "../../components/purchase/PriceProgressBar";
 import QuantityStepper from "../../components/purchase/QuantityStepper";
 import { IoIosArrowBack } from "react-icons/io";
-import useCommentStore from "../../stores/comment";
-import usePurchaseStore from "../../stores/purchase";
 import ConfirmModal from "../../components/purchase/ConfirmModal";
-import { getProductById } from "../../apis/mock/purchase";
-import type { Product } from "../../apis/mock/purchase";
+import {
+  getFundingDetail,
+  createReview,
+  deleteFunding,
+  type FundingItem,
+} from "../../apis/purchase";
 
 const RegisterCommentPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [product, setProduct] = useState<Product | null>(null);
+  const [product, setProduct] = useState<FundingItem | null>(null);
   const [quantity, setQuantity] = useState(1);
   const [commentText, setCommentText] = useState("");
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
 
-  const addComment = useCommentStore((state) => state.addComment);
-  const { cancelOffer } = usePurchaseStore();
-
   useEffect(() => {
     if (id) {
       const numericId = parseInt(id, 10);
-      const fetchedProduct = getProductById(numericId);
-      setProduct(fetchedProduct || null);
+      const fetchProduct = async () => {
+        try {
+          const fetchedProduct = await getFundingDetail(numericId);
+          setProduct(fetchedProduct || null);
+        } catch (error) {
+          console.error("상품 정보를 불러오는데 실패했습니다:", error);
+          setProduct(null);
+        }
+      };
+      fetchProduct();
     }
   }, [id]);
 
-  const handleCancel = () => {
+  const handleCancel = async () => {
     if (product) {
-      cancelOffer(product.id);
-      setIsConfirmModalOpen(false);
-      navigate(`/purchase/${product.id}`);
+      try {
+        await deleteFunding(product.itemId);
+        alert("구매 의사를 취소했습니다.");
+        setIsConfirmModalOpen(false);
+        navigate(`/purchase/${product.itemId}`);
+      } catch (error) {
+        console.error("구매 의사 취소에 실패했습니다:", error);
+        alert("구매 의사 취소에 실패했습니다.");
+      }
     }
   };
 
-  const handleRegister = () => {
+  const handleRegister = async () => {
     if (product && commentText.trim()) {
-      addComment({
-        productId: product.id,
-        author: "김기찬", // Mock author
-        profileImageUrl: "/src/assets/purchase/profile_img1.jpg", // Mock image
-        text: commentText,
-        quantity,
-      });
-      navigate(`/purchase/${product.id}`);
+      try {
+        await createReview({
+          itemId: product.itemId,
+          content: commentText,
+        });
+        alert("기대평이 등록되었습니다.");
+        navigate(`/purchase/${product.itemId}`);
+      } catch (error) {
+        console.error("기대평 등록에 실패했습니다:", error);
+        alert("기대평 등록에 실패했습니다.");
+      }
     }
   };
 
