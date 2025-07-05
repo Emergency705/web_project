@@ -1,4 +1,7 @@
-import React from "react";
+
+
+/**
+ * import React from "react";
 
 interface CategoryFilterProps {
   categories: Category[];
@@ -23,3 +26,4 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({ categories }) => {
 };
 
 export default CategoryFilter;
+ */
