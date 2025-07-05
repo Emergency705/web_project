@@ -1,21 +1,14 @@
-import React, { useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import backIcon from "../assets/backButton.svg";
-import { FiImage } from "react-icons/fi";
+
+import React, { useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import backIcon from '../assets/backButton.svg';
+import { FiImage } from 'react-icons/fi';
 
 const disabilityTypes = [
-  "지체장애",
-  "청각장애",
-  "시각장애",
-  "뇌병변장애",
-  "언어장애",
-  "안면장애",
-  "지적장애",
-  "자폐성장애",
-  "정신장애",
+  "지체장애", "청각장애", "시각장애", "뇌병변장애", "언어장애",
+  "안면장애", "지적장애", "자폐성장애", "정신장애",
 ];
-
-const disabilityLevels = ["정도가 심함", "정도가 심하지 않음"];
+const disabilityLevels = ['정도가 심함', '정도가 심하지 않음'];
 
 const EditProfile = () => {
   const navigate = useNavigate();
@@ -24,9 +17,9 @@ const EditProfile = () => {
   const [showImageMenu, setShowImageMenu] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const [name, setName] = useState("김하은");
-  const [region, setRegion] = useState("서울");
-  const [birth, setBirth] = useState("");
+  const [name, setName] = useState('김하은');
+  const [region, setRegion] = useState('서울');
+  const [birth, setBirth] = useState('')
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
   const [selectedLevel, setSelectedLevel] = useState("");
 
@@ -41,21 +34,19 @@ const EditProfile = () => {
       reader.readAsDataURL(file);
     }
     setShowImageMenu(false);
-    // 파일 재선택 가능하도록 value 리셋
-    e.target.value = "";
+    e.target.value = '';
   };
 
-  // 외부 클릭 시 팝오버 닫기
   React.useEffect(() => {
     if (!showImageMenu) return;
     const handler = (e: MouseEvent) => {
-      const menu = document.getElementById("profile-image-menu");
+      const menu = document.getElementById('profile-image-menu');
       if (menu && !menu.contains(e.target as Node)) {
         setShowImageMenu(false);
       }
     };
-    window.addEventListener("mousedown", handler);
-    return () => window.removeEventListener("mousedown", handler);
+    window.addEventListener('mousedown', handler);
+    return () => window.removeEventListener('mousedown', handler);
   }, [showImageMenu]);
 
   const handleTypeToggle = (type: string) => {
@@ -66,9 +57,7 @@ const EditProfile = () => {
 
   const handleSave = () => {
     const data = {
-      name,
-      region,
-      birth,
+      name, region, birth,
       disabilityTypes: selectedTypes,
       disabilityLevel: selectedLevel,
       profileImage,
@@ -79,12 +68,9 @@ const EditProfile = () => {
 
   return (
     <div className="max-w-[400px] mx-auto p-4 bg-white min-h-screen text-sm relative">
-      {/* 뒤로가기 */}
       <button onClick={() => navigate(-1)} className="absolute left-4 top-4">
         <img src={backIcon} alt="뒤로가기" className="w-6 h-6" />
       </button>
-
-      {/* 숨겨진 파일 인풋은 팝오버 바깥에 둬야 안정적으로 동작 */}
       <input
         ref={fileInputRef}
         type="file"
@@ -93,7 +79,6 @@ const EditProfile = () => {
         onChange={handleImageUpload}
       />
 
-      {/* 프로필 사진 중앙 정렬 */}
       <div className="flex flex-col items-center mt-14 mb-4 relative">
         <div className="w-24 h-24 rounded-full bg-gray-300 flex items-center justify-center overflow-hidden">
           {profileImage && (
@@ -104,8 +89,6 @@ const EditProfile = () => {
             />
           )}
         </div>
-        {/* 갤러리 아이콘 (프로필 오른쪽 하단에 겹치게) */}
-        <button
           type="button"
           className="absolute right-[calc(50%-48px)] bottom-0 translate-x-1/2 translate-y-1/2 bg-white border border-gray-300 rounded-full p-2 shadow cursor-pointer"
           onClick={() => setShowImageMenu((v) => !v)}
@@ -113,16 +96,15 @@ const EditProfile = () => {
         >
           <FiImage className="w-6 h-6 text-gray-600" />
         </button>
-        {/* 팝오버 메뉴 */}
         {showImageMenu && (
           <div
             id="profile-image-menu"
             className="absolute left-1/2 top-full mt-3 z-10 min-w-[160px] bg-white border border-gray-200 rounded-xl shadow-md p-2 flex flex-col"
-            style={{ transform: "translateX(-50%)" }}
+            style={{ transform: 'translateX(-50%)' }}
           >
             <button
               className={`text-[#649F87] font-medium flex items-center justify-between px-2 py-2 text-sm rounded hover:bg-gray-50 ${
-                !profileImage ? "font-bold" : ""
+                !profileImage ? 'font-bold' : ''
               }`}
               onClick={() => {
                 setProfileImage(null);
@@ -145,7 +127,6 @@ const EditProfile = () => {
         )}
       </div>
 
-      {/* 이름 */}
       <label className="block mb-1 font-bold text-base">사용자 이름</label>
       <input
         type="text"
@@ -154,14 +135,13 @@ const EditProfile = () => {
         onChange={(e) => setName(e.target.value)}
       />
 
-      {/* 지역 */}
       <label className="block mb-1 font-bold text-base">거주 지역</label>
       <div className="relative mb-4">
         <select
           className="w-full border border-gray-300 p-2 pr-8 rounded-lg bg-white text-base appearance-none"
           value={region}
           onChange={(e) => setRegion(e.target.value)}
-          style={{ fontSize: "16px" }}
+          style={{ fontSize: '16px' }}
         >
           <option value="서울">서울</option>
           <option value="부산">부산</option>
@@ -169,13 +149,10 @@ const EditProfile = () => {
           <option value="인천">인천</option>
           <option value="광주">광주</option>
         </select>
-        {/* ▼ */}
         <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xl text-gray-500">
           ▼
         </span>
       </div>
-
-      {/* 생년월일 */}
       <label className="block mb-1 font-bold text-base">
         생년월일을 알려주세요!
       </label>
@@ -187,18 +164,11 @@ const EditProfile = () => {
           onChange={(e) => setBirth(e.target.value)}
         />
         <span className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
-          {/* 캘린더 아이콘 */}
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5 text-gray-400"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          ></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          </svg>
         </span>
       </div>
 
-      {/* 장애 유형 */}
       <div className="mb-1 font-bold text-base">
         본인의 장애 종류를 체크해주세요.
       </div>
@@ -213,11 +183,9 @@ const EditProfile = () => {
             type="button"
             onClick={() => handleTypeToggle(type)}
             className={`px-3 py-1 rounded-[10px] text-sm border font-medium
-              ${
-                selectedTypes.includes(type)
-                  ? "bg-[#D3EDE4] border-[#538E79] text-[#538E79]"
-                  : "bg-white border-[#538E79]-300 text-[#538E79]"
-              }
+              ${selectedTypes.includes(type)
+                ? 'bg-[#D3EDE4] border-[#538E79] text-[#538E79]'
+                : 'bg-white border-[#538E79]-300 text-[#538E79]'}
             `}
           >
             {type}
@@ -225,7 +193,6 @@ const EditProfile = () => {
         ))}
       </div>
 
-      {/* 장애 정도 */}
       <p className="text-gray-500 text-xs mb-1">장애 경도</p>
       <div className="flex gap-2 mb-8">
         {disabilityLevels.map((level) => (
@@ -234,11 +201,9 @@ const EditProfile = () => {
             type="button"
             onClick={() => setSelectedLevel(level)}
             className={`px-3 py-1 rounded-[10px] text-sm border font-medium
-              ${
-                selectedLevel === level
-                  ? "bg-[#D3EDE4] border-[#538E79] text-[#538E79]"
-                  : "bg-white border-[#538E79]-300 text-[#538E79]"
-              }
+              ${selectedLevel === level
+                ? 'bg-[#D3EDE4] border-[#538E79] text-[#538E79]'
+                : 'bg-white border-[#538E79]-300 text-[#538E79]'}
             `}
           >
             {level}
@@ -246,7 +211,6 @@ const EditProfile = () => {
         ))}
       </div>
 
-      {/* 저장 버튼 */}
       <button
         onClick={handleSave}
         className="w-full bg-[#74947B] text-white py-3 rounded-md text-base font-bold"
@@ -256,5 +220,4 @@ const EditProfile = () => {
     </div>
   );
 };
-
 export default EditProfile;

@@ -108,8 +108,6 @@ function App() {
           <Route path="/write-review/:id" element={<WriteReview />} />
           <Route path="/saved-posts" element={<SavedPosts />} />
           <Route path="/edit-funding/:id" element={<EditFunding />} />
-
-          {/* 카테고리별 페이지 라우트 */}
           <Route path="/category1" element={<Category1Page />} />
           <Route path="/category2" element={<Category2Page />} />
           <Route path="/category3" element={<Category3Page />} />
