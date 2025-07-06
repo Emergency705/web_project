@@ -6,22 +6,35 @@ import { FiSearch } from "react-icons/fi";
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 import { VscSettings } from "react-icons/vsc";
 import { mockCategories } from "../../data/tempMocks";
+import { useNavigate } from "react-router-dom";
 
 const PurchaseListPage = () => {
   const [current, setCurrent] = useState(0);
   const [products, setProducts] = useState<FundingItem[]>([]);
   const [carouselProducts, setCarouselProducts] = useState<FundingItem[]>([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         const productList = await getFundingList();
-        setProducts(productList);
-        // TODO: 캐러셀에 보여줄 데이터를 별도로 필터링하거나, API가 따로 필요할 수 있습니다.
-        // 우선 전체 목록에서 2개만 잘라서 사용합니다.
-        setCarouselProducts(productList.slice(0, 2));
+        // API 응답(FundingSimpleItem)을 어플리케이션 모델(FundingItem)으로 매핑합니다.
+        const mappedProducts: FundingItem[] = productList.map((p) => ({
+          ...p,
+          id: p.id,
+          description: "", // 상세 정보는 상세 페이지에서 별도 조회하므로 기본값 설정
+          placeType: p.placeType ?? "장소 정보 없음",
+          currentCount: p.currentCount ?? 0,
+          currentPrice: p.currentPrice ?? 0,
+          imageUrl: p.image,
+        }));
+
+        setProducts(mappedProducts);
+        // 캐러셀에는 2개만 보여줍니다.
+        setCarouselProducts(mappedProducts.slice(0, 2));
       } catch (error) {
         console.error("상품 목록을 불러오는데 실패했습니다:", error);
+        alert("상품 목록을 불러오는 데 실패했습니다. 다시 시도해 주세요.");
       }
     };
 
@@ -73,8 +86,9 @@ const PurchaseListPage = () => {
         <div className="relative h-44 mx-4 overflow-hidden">
           {carouselProducts.map((product, index) => (
             <div
-              key={product.itemId}
-              className={`absolute top-0 left-0 w-full h-full transition-opacity duration-500 ${
+              key={product.id}
+              onClick={() => navigate(`/purchase/${product.id}`)}
+              className={`absolute top-0 left-0 w-full h-full transition-opacity duration-500 cursor-pointer ${
                 index === current ? "opacity-100" : "opacity-0"
               }`}
             >
@@ -127,15 +141,15 @@ const PurchaseListPage = () => {
       <div className="grid grid-cols-2 gap-x-4 gap-y-6 px-4">
         {products.map((product) => (
           <ProductCard
-            key={product.itemId}
+            key={product.id}
             product={{
-              id: product.itemId,
+              id: product.id,
               name: product.name,
               imageUrl: product.imageUrl || product.image || "",
               currentPrice: product.currentPrice,
               location: product.placeType,
               participants: product.currentCount,
-              maxParticipants: 100,
+              maxParticipants: product.maxCount,
             }}
           />
         ))}

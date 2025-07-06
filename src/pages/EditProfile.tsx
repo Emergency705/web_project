@@ -1,40 +1,143 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import backIcon from "../assets/backButton.svg";
 import { FiImage } from "react-icons/fi";
+import {
+  fetchMyInfo,
+  updateMyInfo,
+  updateProfileImage,
+  deleteProfileImage,
+  type UpdateUserInfoPayload,
+  type UserInfo,
+} from "../apis/user";
 
-const disabilityTypes = [
-  "지체장애", "청각장애", "시각장애", "뇌병변장애", "언어장애",
-  "안면장애", "지적장애", "자폐성장애", "정신장애",
-];
-const disabilityLevels = ["정도가 심함", "정도가 심하지 않음"];
+// --- 데이터 매핑 ---
+const KOREAN_TO_DISABILITY_TYPE: { [key: string]: string } = {
+  지체장애: "PHYSICAL",
+  청각장애: "HEARING",
+  시각장애: "VISUAL",
+  뇌병변장애: "BRAIN_LESION",
+  언어장애: "SPEECH",
+  안면장애: "FACIAL",
+  지적장애: "INTELLECTUAL",
+  자폐성장애: "AUTISM",
+  정신장애: "MENTAL",
+};
+const DISABILITY_TYPE_TO_KOREAN = Object.fromEntries(
+  Object.entries(KOREAN_TO_DISABILITY_TYPE).map(([k, v]) => [v, k])
+);
+const disabilityTypes = Object.keys(KOREAN_TO_DISABILITY_TYPE);
+
+const KOREAN_TO_HARDNESS: { [key: string]: string } = {
+  "정도가 심함": "SEVERE",
+  "정도가 심하지 않음": "MILD",
+};
+const HARDNESS_TO_KOREAN = Object.fromEntries(
+  Object.entries(KOREAN_TO_HARDNESS).map(([k, v]) => [v, k])
+);
+const disabilityLevels = Object.keys(KOREAN_TO_HARDNESS);
+
+const REGION_MAP = {
+  SEOUL: "서울특별시",
+  BUSAN: "부산광역시",
+  DAEGU: "대구광역시",
+  INCHEON: "인천광역시",
+  GWANGJU: "광주광역시",
+  DAEJEON: "대전광역시",
+  ULSAN: "울산광역시",
+  SEJONG: "세종특별자치시",
+  GYEONGGI: "경기도",
+  GANGWON: "강원도",
+  CHUNGBUK: "충청북도",
+  CHUNGNAM: "충청남도",
+  JEONBUK: "전라북도",
+  JEONNAM: "전라남도",
+  GYEONGBUK: "경상북도",
+  GYEONGNAM: "경상남도",
+  JEJU: "제주특별자치도",
+  SUWON: "수원시",
+  CHEONGJU: "청주시",
+};
 
 const EditProfile = () => {
   const navigate = useNavigate();
-
-  const [profileImage, setProfileImage] = useState<string | null>(null);
-  const [showImageMenu, setShowImageMenu] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const [name, setName] = useState("김하은");
-  const [region, setRegion] = useState("서울");
+  const [initialUser, setInitialUser] = useState<UserInfo | null>(null);
+  const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [showImageMenu, setShowImageMenu] = useState(false);
+  const [name, setName] = useState("");
+  const [region, setRegion] = useState("SEOUL");
   const [birth, setBirth] = useState("");
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
   const [selectedLevel, setSelectedLevel] = useState("");
+  const [loading, setLoading] = useState(true);
 
-  // 파일 인풋 onChange → 파일 받아서 이미지 적용!
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  useEffect(() => {
+    fetchMyInfo()
+      .then((user) => {
+        setInitialUser(user);
+        setName(user.name);
+        setRegion(user.regionName || "SEOUL");
+        setBirth(user.birth.split("T")[0]);
+        setProfileImage(
+          user.profileImage
+            ? `data:image/jpeg;base64,${user.profileImage}`
+            : null
+        );
+        setSelectedTypes(
+          user.disableType && user.disableType !== "NON_DISABLED"
+            ? [DISABILITY_TYPE_TO_KOREAN[user.disableType]]
+            : []
+        );
+        setSelectedLevel(
+          user.hardness && user.hardness !== "NONE"
+            ? HARDNESS_TO_KOREAN[user.hardness]
+            : ""
+        );
+      })
+      .catch((e: Error) =>
+        alert(e.message || "사용자 정보를 불러오지 못했습니다.")
+      )
+      .finally(() => setLoading(false));
+  }, []);
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
+    if (!file) return;
+
+    try {
       const reader = new FileReader();
-      reader.onload = () => {
-        setProfileImage(reader.result as string);
+      reader.onload = async (event) => {
+        const base64ImageWithPrefix = event.target?.result as string;
+        if (base64ImageWithPrefix) {
+          const pureBase64 = base64ImageWithPrefix.split(",")[1];
+          await updateProfileImage(pureBase64); // 순수 base64 데이터 전송
+          setProfileImage(base64ImageWithPrefix); // UI는 전체 데이터 URL 사용
+          alert("프로필 이미지가 변경되었습니다.");
+        }
       };
       reader.readAsDataURL(file);
+    } catch (error) {
+      console.error("이미지 업로드 실패:", error);
+      alert("이미지 업로드에 실패했습니다.");
+    } finally {
+      setShowImageMenu(false);
+      e.target.value = "";
     }
-    setShowImageMenu(false);
-    // 파일 재선택 가능하도록 value 리셋
-    e.target.value = "";
+  };
+
+  const handleImageDelete = async () => {
+    try {
+      await deleteProfileImage();
+      setProfileImage(null);
+      alert("기본 이미지로 변경되었습니다.");
+    } catch (error) {
+      console.error("이미지 삭제 실패:", error);
+      alert("이미지 삭제에 실패했습니다.");
+    } finally {
+      setShowImageMenu(false);
+    }
   };
 
   // 외부 클릭 시 팝오버 닫기
@@ -51,21 +154,60 @@ const EditProfile = () => {
   }, [showImageMenu]);
 
   const handleTypeToggle = (type: string) => {
-    setSelectedTypes((prev) =>
-      prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]
-    );
+    setSelectedTypes((prev) => (prev.includes(type) ? [] : [type]));
   };
 
-  const handleSave = () => {
-    const data = {
-      name, region, birth,
-      disabilityTypes: selectedTypes,
-      disabilityLevel: selectedLevel,
-      profileImage,
-    };
-    console.log("저장된 데이터:", data);
-    navigate("/mypage");
+  const handleSave = async () => {
+    if (!initialUser) return;
+
+    const payload: Partial<UpdateUserInfoPayload> = {};
+
+    if (name !== initialUser.name) payload.name = name;
+    if (birth !== initialUser.birth.split("T")[0]) payload.birth = birth;
+    if (region !== initialUser.regionName) payload.region = region;
+
+    const newDisableType = selectedTypes.length
+      ? KOREAN_TO_DISABILITY_TYPE[selectedTypes[0]]
+      : "NON_DISABLED";
+    const newHardness = selectedLevel
+      ? KOREAN_TO_HARDNESS[selectedLevel]
+      : "NONE";
+
+    if (newDisableType !== initialUser.disableType) {
+      payload.disableType = newDisableType;
+      payload.disable =
+        newDisableType === "NON_DISABLED" ? "NON_DISABLED" : "DISABLED";
+    }
+
+    if (newHardness !== initialUser.hardness) {
+      payload.hardness = newHardness;
+    }
+
+    if (Object.keys(payload).length === 0) {
+      alert("수정된 내용이 없습니다.");
+      return;
+    }
+
+    try {
+      await updateMyInfo(payload);
+      alert("프로필이 성공적으로 수정되었습니다.");
+      navigate("/mypage");
+    } catch (e) {
+      if (e instanceof Error) {
+        alert(e.message || "프로필 수정에 실패했습니다.");
+      } else {
+        alert("알 수 없는 오류로 프로필 수정에 실패했습니다.");
+      }
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        로딩 중...
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-[400px] mx-auto p-4 bg-white min-h-screen text-sm relative">
@@ -92,12 +234,14 @@ const EditProfile = () => {
       {/* 프로필 사진 중앙 정렬 */}
       <div className="flex flex-col items-center mt-14 mb-4 relative">
         <div className="w-24 h-24 rounded-full bg-gray-300 flex items-center justify-center overflow-hidden">
-          {profileImage && (
+          {profileImage ? (
             <img
               src={profileImage}
               alt="profile"
               className="w-full h-full object-cover"
             />
+          ) : (
+            <FiImage className="w-12 h-12 text-gray-400" />
           )}
         </div>
         {/* 갤러리 아이콘 (프로필 오른쪽 하단에 겹치게) */}
@@ -117,13 +261,10 @@ const EditProfile = () => {
             style={{ transform: "translateX(-50%)" }}
           >
             <button
-              className={`text-[#649F87] font-medium flex items-center justify-between px-2 py-2 text-sm rounded hover:bg-gray-50 ${
-                !profileImage ? "font-bold" : ""
+              className={`text-gray-700 font-medium flex items-center justify-between px-2 py-2 text-sm rounded hover:bg-gray-50 ${
+                !profileImage ? "text-[#649F87] font-bold" : ""
               }`}
-              onClick={() => {
-                setProfileImage(null);
-                setShowImageMenu(false);
-              }}
+              onClick={handleImageDelete}
             >
               기본 이미지
               {!profileImage && <span className="ml-2 text-lg">✓</span>}
@@ -157,11 +298,11 @@ const EditProfile = () => {
           onChange={(e) => setRegion(e.target.value)}
           style={{ fontSize: "16px" }}
         >
-          <option value="서울">서울</option>
-          <option value="부산">부산</option>
-          <option value="대구">대구</option>
-          <option value="인천">인천</option>
-          <option value="광주">광주</option>
+          {Object.entries(REGION_MAP).map(([key, value]) => (
+            <option key={key} value={key}>
+              {value}
+            </option>
+          ))}
         </select>
         {/* ▼ */}
         <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xl text-gray-500">

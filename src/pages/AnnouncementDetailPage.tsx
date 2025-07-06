@@ -60,7 +60,9 @@ const AnnouncementDetailPage = () => {
         </div>
         <div className="mt-2 mb-1 text-gray-800 text-sm">{data.institute}</div>
         <div className="font-bold text-lg mt-2">{data.title}</div>
-        <div className="text-gray-500 text-xs">마감일: {dayjs(data.openDate).format("YYYY.MM.DD")}</div>
+        <div className="text-gray-500 text-xs">
+          마감일: {dayjs(data.openDate).format("YYYY.MM.DD")}
+        </div>
         <div className="mt-4 text-sm text-gray-700 leading-relaxed">
           {data.content || "상세 내용이 없습니다."}
         </div>
@@ -70,7 +72,9 @@ const AnnouncementDetailPage = () => {
           저장 해두기
         </button>
         <a
-          href={`https://search.naver.com/search.naver?query=${encodeURIComponent(data.title)}`}
+          href={`https://search.naver.com/search.naver?query=${encodeURIComponent(
+            data.title
+          )}`}
           target="_blank"
           rel="noopener noreferrer"
           className="text-center bg-gray-100 rounded-xl py-3 font-bold text-gray-700"

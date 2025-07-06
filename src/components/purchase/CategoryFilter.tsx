@@ -1,5 +1,10 @@
 import React from "react";
 
+interface Category {
+  name: string;
+  emoji: string;
+}
+
 interface CategoryFilterProps {
   categories: Category[];
 }
