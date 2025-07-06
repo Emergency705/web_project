@@ -17,9 +17,7 @@ import ProfilePage from "./pages/signup/ProfilePage";
 import ExtraPage from "./pages/signup/ExtraPage";
 import CompletePage from "./pages/signup/CompletePage";
 
-
 // Protected Pages
-import HomePage from "./pages/HomePage";
 import MyPage from "./pages/MyPage";
 import CounselPage from "./pages/CounselPage";
 import Category1Page from "./pages/Category1Page";
@@ -33,6 +31,8 @@ import SavedPosts from "./pages/SavedPosts";
 import EditFunding from "./pages/EditFunding";
 import EditProfile from "./pages/EditProfile";
 import AnnouncementDetailPage from "./pages/AnnouncementDetailPage";
+import PurchaseListPage from "./pages/purchase/PurchaseListPage";
+import PurchaseDetailPage from "./pages/purchase/PurchaseDetailPage";
 
 // 인증된 사용자를 위한 레이아웃 (조건부 BottomNavBar)
 const ProtectedLayout = () => {
@@ -80,14 +80,6 @@ function App() {
           <Route path="/signup/profile" element={<ProfilePage />} />
           <Route path="/signup/extra" element={<ExtraPage />} />
           <Route path="/signup/complete" element={<CompletePage />} />
-          <Route path="/category1" element={<Category1Page />} />
-          <Route path="/category2" element={<Category2Page />} />
-          <Route path="/category3" element={<Category3Page />} />
-          <Route path="/category4" element={<Category4Page />} />
-          <Route path="/counsel" element={<CounselPage />} />
-          <Route path="/announcements/:id" element={<AnnouncementDetailPage />} />
-          <Route path="/home" element={<HomePage />} />
-          
         </Route>
 
         {/* 인증이 필요한 페이지 */}
@@ -99,8 +91,10 @@ function App() {
           }
         >
           <Route path="/mypage" element={<MyPage />} />
+          <Route path="/purchase" element={<PurchaseListPage />} />
+          <Route path="/purchase/:id" element={<PurchaseDetailPage />} />
           <Route path="/purchase/:id/comment" element={<WriteReview />} />
-          <Route path="/edit-profile" element={<EditProfile/>} />
+          <Route path="/edit-profile" element={<EditProfile />} />
           <Route path="/goodbye" element={<GoodbyePage />} />
           <Route path="/my-fundings" element={<MyFundings />} />
           <Route path="/write-review/:id" element={<WriteReview />} />
@@ -108,7 +102,15 @@ function App() {
           <Route path="/edit-funding/:id" element={<EditFunding />} />
 
           {/* 카테고리별 페이지 라우트 */}
-          
+          <Route path="/category1" element={<Category1Page />} />
+          <Route path="/category2" element={<Category2Page />} />
+          <Route path="/category3" element={<Category3Page />} />
+          <Route path="/category4" element={<Category4Page />} />
+          <Route path="/counsel" element={<CounselPage />} />
+          <Route
+            path="/announcements/:id"
+            element={<AnnouncementDetailPage />}
+          />
         </Route>
       </Routes>
     </BrowserRouter>

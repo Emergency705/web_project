@@ -3,11 +3,12 @@ import { useParams, useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
 import CategoryTopBar from "../components/CategoryTopBar";
 import api from "../apis"; // axios 인스턴스
+import { type Announcement } from "../apis/announcements";
 
 const AnnouncementDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [data, setData] = useState<any>(null);
+  const [data, setData] = useState<Announcement | null>(null);
 
   useEffect(() => {
     if (!id) return;
@@ -15,7 +16,7 @@ const AnnouncementDetailPage = () => {
       try {
         const res = await api.get(`/announcements/${id}`);
         setData(res.data.result);
-      } catch (e) {
+      } catch {
         alert("상세 정보를 불러올 수 없습니다.");
         navigate(-1);
       }
@@ -60,9 +61,11 @@ const AnnouncementDetailPage = () => {
         </div>
         <div className="mt-2 mb-1 text-gray-800 text-sm">{data.institute}</div>
         <div className="font-bold text-lg mt-2">{data.title}</div>
-        <div className="text-gray-500 text-xs">마감일: {dayjs(data.openDate).format("YYYY.MM.DD")}</div>
+        <div className="text-gray-500 text-xs">
+          마감일: {dayjs(data.openDate).format("YYYY.MM.DD")}
+        </div>
         <div className="mt-4 text-sm text-gray-700 leading-relaxed">
-          {data.content || "상세 내용이 없습니다."}
+          {data.infoType || "상세 내용이 없습니다."}
         </div>
       </div>
       <div className="flex flex-col gap-3 mx-4 mt-70">
@@ -70,7 +73,9 @@ const AnnouncementDetailPage = () => {
           저장 해두기
         </button>
         <a
-          href={`https://search.naver.com/search.naver?query=${encodeURIComponent(data.title)}`}
+          href={`https://search.naver.com/search.naver?query=${encodeURIComponent(
+            data.title
+          )}`}
           target="_blank"
           rel="noopener noreferrer"
           className="text-center bg-gray-100 rounded-xl py-3 font-bold text-gray-700"

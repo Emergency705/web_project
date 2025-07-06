@@ -1,4 +1,4 @@
-import api from "./axios";
+import api from "./index";
 
 // --- 타입 정의 ---
 
@@ -8,6 +8,18 @@ interface ApiResponse<T> {
   code: string;
   message: string;
   result: T;
+}
+
+// 목록 조회 시 받는 간단한 아이템 타입
+export interface FundingSimpleItem {
+  id: number;
+  name: string;
+  image: string;
+  // 목록에서도 가격, 수량 등 추가 정보가 필요할 경우 여기에 필드를 추가할 수 있습니다.
+  currentPrice?: number;
+  currentCount?: number;
+  placeType?: string;
+  maxCount?: number;
 }
 
 // 아래는 API 응답을 기반으로 한 최종 타입입니다.
@@ -26,7 +38,7 @@ export interface Review {
 }
 
 export interface FundingItem {
-  itemId: number;
+  id: number;
   name: string;
   description: string;
   imageUrl?: string; // 상세 조회 응답 필드
@@ -44,13 +56,13 @@ export interface FundingItem {
 
 // 구매 등록 (POST /funding/{itemId}) 요청 타입
 export interface CreateFundingRequest {
-  itemId: number;
+  id: number;
   count: number;
 }
 
 // 기대평 등록 (POST /review) 요청 타입
 export interface CreateReviewRequest {
-  itemId: number;
+  id: number;
   content: string;
 }
 
@@ -58,10 +70,10 @@ export interface CreateReviewRequest {
 
 /**
  * 전체 구매 목록 조회 API
- * @returns Promise<FundingItem[]>
+ * @returns Promise<FundingSimpleItem[]>
  */
-export const getFundingList = async (): Promise<FundingItem[]> => {
-  const response = await api.get<ApiResponse<FundingItem[]>>("/funding/");
+export const getFundingList = async (): Promise<FundingSimpleItem[]> => {
+  const response = await api.get<ApiResponse<FundingSimpleItem[]>>("/funding/");
   return response.data.result;
 };
 
@@ -76,54 +88,47 @@ export const getMyFundingList = async (): Promise<FundingItem[]> => {
 
 /**
  * 구매 상세 정보 조회 API
- * @param itemId 상품 ID
+ * @param id 상품 ID
  * @returns Promise<FundingItem>
  */
-export const getFundingDetail = async (
-  itemId: number
-): Promise<FundingItem> => {
-  const response = await api.get<ApiResponse<FundingItem>>(
-    `/funding/${itemId}`
-  );
+export const getFundingDetail = async (id: number): Promise<FundingItem> => {
+  const response = await api.get<ApiResponse<FundingItem>>(`/funding/${id}`);
   return response.data.result;
 };
 
 /**
  * 구매 등록(참여) API
- * @param data { itemId, count }
+ * @param data { id, count }
  */
 export const createFunding = async (data: CreateFundingRequest) => {
   // Swagger 명세와 달리, itemId는 URL 경로로만 전달하고, count만 쿼리로 전달합니다.
   // 서버에서 중복된 itemId로 인해 500 오류가 발생하는 것을 방지하기 위함입니다.
-  const { itemId, count } = data;
-  const response = await api.post<ApiResponse<object>>(
-    `/funding/${itemId}`,
-    null,
-    {
-      params: {
-        count,
-      },
-    }
-  );
+  const { id, count } = data;
+  const response = await api.post<ApiResponse<object>>(`/funding/${id}`, null, {
+    params: {
+      count,
+    },
+  });
   return response.data;
 };
 
 /**
  * 구매 의사 취소 API
- * @param itemId 상품 ID
+ * @param id 상품 ID
  */
-export const deleteFunding = async (itemId: number) => {
-  const response = await api.delete<ApiResponse<object>>(`/funding/${itemId}`);
+export const deleteFunding = async (id: number) => {
+  const response = await api.delete<ApiResponse<object>>(`/funding/${id}`);
   return response.data;
 };
 
 /**
  * 기대평 등록 API
- * @param data { itemId, content }
+ * @param data { id, content }
  */
 export const createReview = async (data: CreateReviewRequest) => {
+  const { id, content } = data;
   const response = await api.post<ApiResponse<object>>("/review", null, {
-    params: data,
+    params: { itemId: id, content }, // 프론트엔드의 id를 서버의 itemId로 매핑
   });
   return response.data;
 };

@@ -1,20 +1,15 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { fetchMyInfo } from "../apis/user";
-import type { UserInfo } from "../apis/user";
+import { fetchMyInfo, type UserInfo } from "../apis/user";
+import { getMyFundingList, type FundingItem } from "../apis/purchase";
 
 const profileImg =
   "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=facearea&w=128&q=80";
 
-const fundings = [
-  "https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=300&q=80",
-  "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=300&q=80",
-  "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=300&q=80",
-];
-
 const MyPage = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState<UserInfo | null>(null);
+  const [myFundings, setMyFundings] = useState<FundingItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -24,6 +19,13 @@ const MyPage = () => {
         alert(e.message || "내 정보를 불러오지 못했습니다.");
       })
       .finally(() => setLoading(false));
+
+    getMyFundingList()
+      .then(setMyFundings)
+      .catch((e: Error) => {
+        // 유저 정보가 중요하므로, 펀딩 목록 에러는 alert만 하고 로딩은 멈추지 않습니다.
+        alert(e.message || "내 펀딩 목록을 불러오지 못했습니다.");
+      });
   }, []);
 
   // 나이 계산 함수
@@ -67,9 +69,13 @@ const MyPage = () => {
 
       {/* 프로필 카드 */}
       <div className="flex items-center mb-6">
-        {/* 프로필 사진 (실제 이미지 url 나오면 user.profileImage로 교체!) */}
+        {/* 프로필 사진 */}
         <img
-          src={user?.profileImage || profileImg}
+          src={
+            user?.profileImage
+              ? `data:image/jpeg;base64,${user.profileImage}`
+              : profileImg
+          }
           alt="프로필"
           className="w-14 h-14 rounded-full object-cover border mr-3"
         />
@@ -100,14 +106,20 @@ const MyPage = () => {
           <span className="text-2xl text-[#222]">{">"}</span>
         </div>
         <div className="flex gap-3 overflow-x-auto">
-          {fundings.map((src, i) => (
-            <img
-              key={i}
-              src={src}
-              alt={`펀딩${i + 1}`}
-              className="w-24 h-28 object-cover rounded-xl bg-gray-100"
-            />
-          ))}
+          {myFundings.length > 0 ? (
+            myFundings.map((funding) => (
+              <img
+                key={funding.id}
+                src={funding.image}
+                alt={`펀딩${funding.id}`}
+                className="w-24 h-28 object-cover rounded-xl bg-gray-100"
+              />
+            ))
+          ) : (
+            <div className="w-full text-center py-10 text-gray-400">
+              참여한 펀딩이 없습니다.
+            </div>
+          )}
         </div>
       </div>
 

@@ -1,5 +1,3 @@
-/**
- * 
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import PriceProgressBar from "../../components/purchase/PriceProgressBar";
@@ -9,40 +7,66 @@ import {
   getFundingDetail,
   createFunding,
   deleteFunding,
+  getMyFundingList,
   type FundingItem,
 } from "../../apis/purchase";
 import useCommentStore from "../../stores/comment";
 import SellerCard from "../../components/purchase/SellerCard";
 
+const mockSeller = {
+  name: "아이셔",
+  profileImageUrl: "https://via.placeholder.com/40",
+  comment: "안녕하세요! 현재 공동구매를 진행하고 있는 판매자 아이셔입니다.",
+};
+
 const PurchaseDetailPage = () => {
-  const { id } = useParams<{ id: string }>();
+  const { id: pageId } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [product, setProduct] = useState<FundingItem | null>(null);
   const [quantity, setQuantity] = useState(1);
   const [isPurchaseModalOpen, setIsPurchaseModalOpen] = useState(false);
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
+  const [isParticipant, setIsParticipant] = useState(false);
 
   const { comments, deleteComment } = useCommentStore();
-  const productComments = (product && comments[product.itemId]) || [];
+  const productComments = (product && comments[product.id]) || [];
 
   useEffect(() => {
-    if (id) {
-      const numericId = parseInt(id, 10);
-      getFundingDetail(numericId)
-        .then(setProduct)
-        .catch(() => {
-          alert("상품 정보를 불러오는데 실패했습니다.");
-          navigate("/purchase");
-        });
-    }
-  }, [id, navigate]);
+    const fetchFundingData = async () => {
+      if (!pageId) return;
+
+      try {
+        const numericId = parseInt(pageId, 10);
+
+        // 펀딩 상세 정보와 내 펀딩 목록을 동시에 가져옵니다.
+        const [fundingDetail, myFundings] = await Promise.all([
+          getFundingDetail(numericId),
+          getMyFundingList(),
+        ]);
+
+        setProduct(fundingDetail);
+
+        // 현재 사용자가 이 펀딩에 참여했는지 확인합니다.
+        const userHasParticipated = myFundings.some(
+          (funding) => funding.id === numericId
+        );
+        setIsParticipant(userHasParticipated);
+      } catch (error) {
+        console.error("데이터를 불러오는데 실패했습니다:", error);
+        alert("상품 정보를 불러오는데 실패했습니다.");
+        navigate("/purchase");
+      }
+    };
+
+    fetchFundingData();
+  }, [pageId, navigate]);
 
   const handlePurchase = async () => {
     if (product) {
       try {
-        await createFunding({ itemId: product.itemId, count: quantity });
+        await createFunding({ id: product.id, count: quantity });
         alert("구매 참여가 완료되었습니다.");
-        navigate(`/purchase/${product.itemId}`);
+        navigate(`/purchase/${product.id}`);
       } catch {
         alert("구매 참여에 실패했습니다.");
       }
@@ -52,9 +76,9 @@ const PurchaseDetailPage = () => {
   const handleCancel = async () => {
     if (product) {
       try {
-        await deleteFunding(product.itemId);
+        await deleteFunding(product.id);
         alert("구매 참여를 취소했습니다.");
-        navigate(`/purchase/${product.itemId}`);
+        navigate(`/purchase/${product.id}`);
       } catch {
         alert("구매 취소에 실패했습니다.");
       }
@@ -63,7 +87,7 @@ const PurchaseDetailPage = () => {
 
   const handleRegisterComment = () => {
     if (product) {
-      navigate(`/write-review/${product.itemId}`);
+      navigate(`/write-review/${product.id}`);
     }
   };
 
@@ -81,12 +105,11 @@ const PurchaseDetailPage = () => {
     return <div>상품 정보를 불러오는 중...</div>;
   }
 
-  const isParticipant = true;
-
   return (
     <div className="bg-white min-h-screen pb-24">
       <header className="sticky top-0 bg-white z-10 p-4 flex items-center border-b border-gray-200">
         <button onClick={() => navigate(-1)} className="p-1">
+          {/* 뒤로가기 아이콘, 필요시 추가 */}
         </button>
         <h1 className="text-lg font-bold text-center flex-1">{product.name}</h1>
         <div className="w-8"></div>
@@ -104,7 +127,12 @@ const PurchaseDetailPage = () => {
           startPrice={product.startPrice ?? 0}
           maxPrice={product.maxPrice ?? 0}
         />
-        {product.seller && <SellerCard seller={product.seller} />}
+        {product.closedDate && (
+          <p className="text-sm text-gray-500 mt-2 text-center">
+            {calculateDday(product.closedDate)}
+          </p>
+        )}
+        <SellerCard seller={mockSeller} />
 
         <div className="mt-6">
           <h3 className="font-bold text-lg mb-2">상품 설명</h3>
@@ -121,14 +149,11 @@ const PurchaseDetailPage = () => {
             <SellerCard
               key={comment.id}
               seller={{
-                id: comment.id,
                 name: comment.author,
                 profileImageUrl: comment.profileImageUrl,
                 comment: `${comment.text} (수량: ${comment.quantity})`,
               }}
-              onDelete={() =>
-                product && deleteComment(comment.id, product.itemId)
-              }
+              onDelete={() => product && deleteComment(comment.id, product.id)}
             />
           ))}
         </div>
@@ -192,8 +217,3 @@ const PurchaseDetailPage = () => {
 };
 
 export default PurchaseDetailPage;
-
- * 
- *
- * 
- */

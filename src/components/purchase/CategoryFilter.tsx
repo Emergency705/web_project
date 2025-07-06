@@ -1,13 +1,13 @@
-
-
-/**
- * import React from "react";
+interface Category {
+  name: string;
+  emoji: string;
+}
 
 interface CategoryFilterProps {
   categories: Category[];
 }
 
-const CategoryFilter: React.FC<CategoryFilterProps> = ({ categories }) => {
+const CategoryFilter = ({ categories }: CategoryFilterProps) => {
   return (
     <div className="flex justify-around">
       {categories.map((category) => (
@@ -26,4 +26,3 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({ categories }) => {
 };
 
 export default CategoryFilter;
- */

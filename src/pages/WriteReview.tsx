@@ -8,14 +8,14 @@ import {
 } from "../apis/purchase";
 
 const WriteReview = () => {
-  const { id } = useParams<{ id: string }>();
+  const { id: pageId } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [funding, setFunding] = useState<FundingItem | null>(null);
   const [content, setContent] = useState("");
 
   useEffect(() => {
-    if (id) {
-      const numericId = parseInt(id, 10);
+    if (pageId) {
+      const numericId = parseInt(pageId, 10);
       getFundingDetail(numericId)
         .then(setFunding)
         .catch((err) => {
@@ -24,7 +24,7 @@ const WriteReview = () => {
           navigate(-1);
         });
     }
-  }, [id, navigate]);
+  }, [pageId, navigate]);
 
   const handleSubmit = async () => {
     if (!funding || !content.trim()) {
@@ -34,11 +34,11 @@ const WriteReview = () => {
 
     try {
       await createReview({
-        itemId: funding.itemId,
+        id: funding.id,
         content: content,
       });
       alert("기대평이 성공적으로 등록되었습니다!");
-      navigate(`/purchase/${funding.itemId}`);
+      navigate(`/purchase/${funding.id}`);
     } catch (err) {
       console.error(err);
       alert("기대평 등록에 실패했습니다.");
