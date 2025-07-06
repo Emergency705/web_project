@@ -86,6 +86,7 @@ function App() {
           <Route path="/category4" element={<Category4Page />} />
           <Route path="/counsel" element={<CounselPage />} />
           <Route path="/announcements/:id" element={<AnnouncementDetailPage />} />
+          <Route path="/home" element={<HomePage />} />
           
         </Route>
 
@@ -97,7 +98,6 @@ function App() {
             </ProtectedRoute>
           }
         >
-          <Route path="/home" element={<HomePage />} />
           <Route path="/mypage" element={<MyPage />} />
           <Route path="/purchase/:id/comment" element={<WriteReview />} />
           <Route path="/edit-profile" element={<EditProfile/>} />
